@@ -143,6 +143,37 @@ Syracuse University
 
   <div class="item">
     <h2 class="item-title">
+      Deep Q-Learning Agent for Algorithmic Trading
+    </h2>
+
+    <div class="item-meta">
+      2026 · Reinforcement Learning · Quantitative Finance · NumPy
+    </div>
+
+    <p>
+      Built a DQN agent for binary position sizing (long/flat) on daily
+      price series, implemented end-to-end in NumPy including manual
+      backpropagation, with a configurable-depth network and a
+      backtesting framework (total return, Sharpe ratio, max drawdown,
+      win rate) benchmarked against buy-and-hold.
+    </p>
+
+    <p>
+      Reported results honestly, including where the agent underperformed:
+      with a shallow network it beat the benchmark only on synthetic data,
+      losing on both real assets tested. Deepening the network from one to
+      three hidden layers closed most of that gap, pushing the agent's
+      Sharpe ratio above buy-and-hold on both real assets, even though
+      absolute return stayed below it in a sustained bull market.
+    </p>
+
+    <p>
+      <a href="trading-dqn/index.html" target="_blank" rel="noopener noreferrer">Read the full writeup →</a>
+    </p>
+  </div>
+
+  <div class="item">
+    <h2 class="item-title">
       Interactive Möbius Strip Visualizer
     </h2>
 
