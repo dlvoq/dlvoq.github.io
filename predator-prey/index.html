@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Depredador y presa: simulación y bitácora técnica</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+  :root {
+    --bg: #14150f;
+    --panel: #1b1c15;
+    --panel-2: #21221a;
+    --text: #eef0e6;
+    --muted: #9a9d8c;
+    --clay: #e07a4a;
+    --slate: #6fb0c2;
+    --moss: #6b8a54;
+    --gold: #e8b23d;
+    --line: #34362a;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Public Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 72px 28px 120px;
+  }
+
+  /* ---------- Encabezado ---------- */
+  header.doc-header { margin-bottom: 56px; }
+
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 0 0 18px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 42px;
+    line-height: 1.15;
+    margin: 0 0 20px;
+    max-width: 16ch;
+  }
+
+  header.doc-header p.lede {
+    font-size: 17px;
+    color: #c9cbb9;
+    max-width: 58ch;
+    margin: 0 0 28px;
+  }
+
+  .meta-line {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .meta-line strong { color: var(--text); font-weight: 500; }
+
+  /* ---------- Navegación entre secciones ---------- */
+  .section-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 64px;
+  }
+  .section-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+  }
+  .section-nav a:hover { color: var(--text); border-color: var(--muted); }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    margin: 0 0 8px;
+  }
+
+  section.block { margin-bottom: 96px; }
+  section.block h2.block-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 32px;
+  }
+
+  /* ---------- Visualizador ---------- */
+  #canvas-wrap {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    display: inline-block;
+  }
+
+  #controls {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+  button:hover { background: #ffffff; }
+  button:disabled { background: #4a4c3c; cursor: default; }
+
+  input[type="range"] { width: 160px; }
+  input[type="file"] { font-family: 'Public Sans', sans-serif; font-size: 12.5px; color: var(--text); }
+  select, label.checkbox {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+  }
+  label.checkbox { display: flex; align-items: center; gap: 6px; }
+
+  #status {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    min-height: 16px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 18px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; color: #c9cbb9; }
+  .dot { width: 9px; height: 9px; display: inline-block; border-radius: 50%; }
+
+  /* ---------- Bitácora / cronología ---------- */
+  .log { position: relative; padding-left: 34px; }
+  .log::before {
+    content: "";
+    position: absolute;
+    left: 5px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .entry { position: relative; padding-bottom: 68px; }
+  .entry:last-child { padding-bottom: 0; }
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -34px; top: 6px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--gold);
+  }
+
+  .entry-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--gold);
+    margin: 0 0 6px;
+  }
+
+  h3.entry-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0 0 15px;
+    line-height: 1.25;
+  }
+
+  .entry p { margin: 0 0 15px; color: #dcded1; }
+  .entry p:last-child { margin-bottom: 0; }
+  .entry strong { color: var(--text); font-weight: 600; }
+
+  .todo-list {
+    margin: 0;
+    padding-left: 22px;
+    color: #dcded1;
+  }
+  .todo-list li { margin-bottom: 15px; }
+  .todo-list li:last-child { margin-bottom: 0; }
+  .todo-list::marker,
+  .todo-list li::marker { color: var(--gold); }
+
+  .eq-box {
+    background: var(--panel);
+    border-left: 3px solid var(--gold);
+    padding: 20px 22px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .eq-box .eq-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  pre {
+    background: var(--panel);
+    border-left: 3px solid var(--slate);
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 18px 0;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #d4d6c8;
+  }
+  p code, li code {
+    background: var(--panel-2);
+    padding: 1px 6px;
+    font-size: 0.86em;
+  }
+
+  .finding {
+    background: var(--panel);
+    border-left: 3px solid var(--clay);
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .finding .f-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--clay);
+    margin-bottom: 10px;
+  }
+  .finding p { color: #dcded1; margin: 0; }
+  .finding p + p { margin-top: 10px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  th { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--muted); }
+  td.num { font-family: 'JetBrains Mono', monospace; }
+  .tag-pred { color: var(--clay); }
+  .tag-prey { color: var(--slate); }
+
+  footer.doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 44px 18px 80px; }
+    h1 { font-size: 32px; }
+    .log { padding-left: 24px; }
+    .entry::before { left: -24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc-header">
+    <p class="kicker">Simulación multiagente · reinforcement learning</p>
+    <h1>Depredador y presa en un entorno parcialmente observable</h1>
+    <p class="lede">Documentación técnica de un entorno de aprendizaje por refuerzo con sensado tipo lidar y aprendizaje simultáneo de dos agentes, junto con el visualizador interactivo de las simulaciones registradas.</p>
+    <div class="meta-line">
+      <span>Entorno: <strong>laberinto 10×10</strong></span>
+      <span>Sensor: <strong>lidar de 8 rayos</strong></span>
+      <span>Algoritmo: <strong>DQN, implementación en NumPy</strong></span>
+      <span>Agentes: <strong>2, aprendizaje simultáneo</strong></span>
+    </div>
+  </header>
+
+  <nav class="section-nav">
+    <a href="#simulador">Visualizador</a>
+    <a href="#bitacora">Bitácora técnica</a>
+  </nav>
+
+  <!-- =========================================================
+       SECCIÓN 1: VISUALIZADOR INTERACTIVO
+  ========================================================== -->
+  <section class="block" id="simulador">
+    <p class="section-title">01 · herramienta</p>
+    <h2 class="block-title">Visualizador de episodios</h2>
+
+    <div id="canvas-wrap"></div>
+
+    <div id="controls">
+      <button id="playBtn" disabled>Reproducir</button>
+      <button id="stepBtn" disabled>Avanzar</button>
+      <button id="resetBtn" disabled>Reiniciar</button>
+      <input type="range" id="scrubber" min="0" max="0" value="0" disabled>
+      <input type="file" id="fileInput" accept="application/json">
+      <select id="fogView" disabled>
+        <option value="predator">Vista: mapa conocido por el depredador</option>
+        <option value="prey">Vista: mapa conocido por la presa</option>
+        <option value="union">Vista: unión de ambos mapas</option>
+        <option value="none">Vista: laberinto completo</option>
+      </select>
+      <label class="checkbox">
+        <input type="checkbox" id="lidarToggle" checked disabled> Mostrar sensores lidar
+      </label>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot" style="background:#e07a4a;"></span>Depredador</span>
+      <span><span class="dot" style="background:#6fb0c2;"></span>Presa</span>
+      <span><span class="dot" style="background:#6b8a54; border-radius:2px;"></span>Pared</span>
+      <span><span class="dot" style="background:#e07a4a; opacity:0.55;"></span>Lidar del depredador</span>
+      <span><span class="dot" style="background:#6fb0c2; opacity:0.55;"></span>Lidar de la presa</span>
+      <span><span class="dot" style="background:#e8b23d;"></span>Punto de detección</span>
+    </div>
+
+    <div id="status">Cargando laberinto…</div>
+  </section>
+
+  <!-- =========================================================
+       SECCIÓN 2: BITÁCORA TÉCNICA
+  ========================================================== -->
+  <section class="block" id="bitacora">
+    <p class="section-title">02 · documentación</p>
+    <h2 class="block-title">Bitácora técnica</h2>
+
+    <div class="log">
+
+      <div class="entry">
+        <p class="entry-num">2.1</p>
+        <h3 class="entry-title">Observabilidad parcial: un laberinto que ningún agente conoce por completo</h3>
+        <p>El entorno se diseñó de forma que ningún agente recibe la posición exacta de todo el mapa; cada uno dispone únicamente de la información que su propio sensor le proporciona. Esta decisión convierte el problema en un <strong>POMDP</strong> (proceso de decisión de Markov parcialmente observable): la política de cada agente actúa sobre una estimación del entorno, no sobre su estado real.</p>
+        <p>El módulo del entorno conserva la posición exacta de ambos agentes en todo momento, ya que actúa como árbitro para determinar encuentros. Esa información, sin embargo, nunca se expone directamente a la política de decisión.</p>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.2</p>
+        <h3 class="entry-title">El sensor: ocho rayos y un mapa propio por agente</h3>
+        <p>Cada agente emite ocho rayos en direcciones fijas (Norte, Noreste, Este, etc., en sentido horario). Cada rayo avanza celda por celda hasta un alcance máximo, y se detiene al encontrar una pared, el límite del tablero, o la posición del otro agente.</p>
+        <div class="eq-box">
+          <p class="eq-label">distancia normalizada por rayo</p>
+          <p>$$d_{\text{rayo}} = \frac{\text{celdas libres hasta el obstáculo}}{\text{alcance máximo}} \in [0, 1]$$</p>
+        </div>
+        <p>Cada celda atravesada por un rayo se registra como "libre" en el mapa interno de ese agente, no en un mapa compartido. Con el paso de los episodios, cada agente construye su propia representación parcial del laberinto, de forma análoga al mapeo incremental de un robot equipado con lidar.</p>
+        <div class="finding">
+          <p class="f-label">simplificación de diseño</p>
+          <p>Un lidar físico solo mide tiempo de rebote de un haz: entrega una distancia, sin indicar qué golpeó. Esta implementación devuelve dos canales separados por rayo (<code>wall_dist</code> y <code>agent_detected</code>), es decir, ya entrega la clasificación resuelta en vez de una lectura cruda. Se hizo así para separar el problema de aprendizaje por refuerzo del de percepción y clasificación de objetos, que es otro problema distinto.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.3</p>
+        <h3 class="entry-title">Arquitectura de la red: veintiséis entradas, cinco salidas</h3>
+        <p>La observación de cada agente se convierte en un vector de 26 valores: 2 corresponden a la posición propia normalizada, y 24 a las lecturas del lidar. Estas últimas surgen de que cada uno de los 8 rayos aporta <strong>tres</strong> componentes, no dos: la distancia normalizada a la pared más cercana, un indicador binario de si ese rayo detectó al otro agente, y la distancia normalizada a ese agente en caso de haberlo detectado. Así, <code>8 rayos × 3 valores = 24</code>, más los 2 de posición propia, totalizan 26. Una red de una capa oculta transforma ese vector en un valor Q por cada una de las cinco acciones disponibles.</p>
+        <div class="eq-box">
+          <p class="eq-label">propagación hacia adelante</p>
+          <p>$$z_1 = xW_1 + b_1 \qquad a_1 = \text{ReLU}(z_1) \qquad Q = a_1 W_2 + b_2$$</p>
+        </div>
+        <p>La no linealidad introducida por <code>ReLU</code> entre ambas capas es necesaria: sin ella, la composición de transformaciones lineales sería equivalente a una única transformación lineal, independientemente del número de capas.</p>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.4</p>
+        <h3 class="entry-title">Exploración frente a explotación</h3>
+        <p>Al inicio del entrenamiento, los pesos de la red son aleatorios y sus valores Q carecen de significado. Por esta razón, la acción no se elige siempre de forma determinista: con probabilidad <code>ε</code> se selecciona una acción aleatoria, y esa probabilidad decrece progresivamente a medida que la red acumula evidencia confiable.</p>
+        <div class="eq-box">
+          <p class="eq-label">política epsilon-greedy</p>
+          <p>$$a = \begin{cases} \text{acción aleatoria} & \text{con probabilidad } \varepsilon \\ \arg\max_a Q(s,a) & \text{con probabilidad } 1-\varepsilon \end{cases}$$</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.5</p>
+        <h3 class="entry-title">Memoria de experiencias</h3>
+        <p>Entrenar únicamente con la transición más reciente expondría a la red a secuencias de experiencias fuertemente correlacionadas entre sí. El <em>replay buffer</em> almacena un historial de transiciones pasadas y entrena a partir de muestras aleatorias de ese historial, reduciendo esa correlación y estabilizando el aprendizaje.</p>
+        <div class="finding">
+          <p class="f-label">fuente de los datos de entrenamiento</p>
+          <p>No existe un conjunto de datos externo. Cada episodio es una simulación generada en el momento, jugada por los propios agentes (<em>self-play</em>). Cada paso produce una transición <code>(observación, acción, recompensa, observación siguiente, fin)</code>, que se añade al buffer; los minibatches de entrenamiento se muestrean de ahí, no de un dataset preexistente.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.6</p>
+        <h3 class="entry-title">La ecuación de Bellman</h3>
+        <p>El criterio central del aprendizaje establece que el valor de una acción equivale a la recompensa inmediata más el mejor valor alcanzable desde el estado siguiente.</p>
+        <div class="eq-box">
+          <p class="eq-label">objetivo de Bellman</p>
+          <p>$$\text{target} = \begin{cases} r & \text{si el episodio finalizó} \\ r + \gamma \max_{a'} Q(s', a') & \text{si continúa} \end{cases}$$</p>
+        </div>
+        <p>La distinción entre ambos casos es relevante: si el episodio finalizó, no existe un estado siguiente del cual derivar valor adicional, por lo que no corresponde incorporar ningún término de futuro.</p>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.7</p>
+        <h3 class="entry-title">Inestabilidad numérica: la red como objetivo de sí misma</h3>
+        <p>La primera versión del entrenamiento utilizaba la misma red tanto para la predicción como para el cálculo del objetivo de Bellman. El resultado fue una divergencia numérica (<code>RuntimeWarning: overflow</code>) hasta la pérdida total de significado de los valores producidos.</p>
+        <div class="finding">
+          <p class="f-label">hallazgo</p>
+          <p>La causa es indirecta: en cada actualización de la red, el objetivo mismo se modifica, dado que se calcula con esa misma red. Se genera así un objetivo móvil que se desplaza en la dirección del último error, produciendo un ciclo de retroalimentación que amplifica el error en lugar de reducirlo.</p>
+        </div>
+        <p>La solución estándar en DQN es la <strong>red objetivo (target network)</strong>: una copia de los parámetros que se actualiza únicamente cada cierto número de episodios. La red en entrenamiento converge hacia un objetivo estable durante ese intervalo, en vez de perseguir un objetivo que cambia en cada paso.</p>
+        <pre><code>if episode % target_update_every == 0:
+    copy_weights(q_network, target_network)  # nueva copia congelada</code></pre>
+        <p>Tras esta corrección, y con una reducción moderada de la tasa de aprendizaje, la tasa de captura del depredador pasó de 4% en el episodio 50 a valores estables cercanos al 100% hacia el episodio 600: la primera evidencia consistente de que el agente estaba aprendiendo algo real.</p>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.8</p>
+        <h3 class="entry-title">Bucle determinista: el costo insuficiente de una colisión</h3>
+        <p>Al entrenar a ambos agentes simultáneamente surgió un problema distinto: en un episodio de evaluación, ninguno de los dos agentes se desplazó en ningún momento durante 101 pasos consecutivos.</p>
+        <div class="finding">
+          <p class="f-label">hallazgo</p>
+          <p>Bajo una política puramente determinista (sin exploración), si la acción de mayor valor Q resulta inválida en la posición actual, el agente se queda quieto. Y como el estado no cambia, la red vuelve a evaluar la misma entrada y elige otra vez la misma acción: un bucle sin salida.</p>
+          <p>La causa de fondo estaba en la función de recompensa: colisionar con una pared tenía el mismo costo que desplazarse con éxito, por lo que la red carecía de una señal que penalizara específicamente ese comportamiento.</p>
+        </div>
+        <p>Se incorporó una penalización específica por colisión, evaluada con dos magnitudes distintas:</p>
+        <table>
+          <tr><th>Penalización por colisión</th><th>Comportamiento observado</th></tr>
+          <tr><td class="num">−0.2</td><td>La presa convergió a permanecer inmóvil de forma permanente: el riesgo de colisión superaba el beneficio marginal de sobrevivir un paso adicional.</td></tr>
+          <tr><td class="num">−0.05</td><td>Desplazamiento variado y sostenido; el bucle determinista desapareció sin inducir pasividad excesiva.</td></tr>
+        </table>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.9</p>
+        <h3 class="entry-title">Comportamiento emergente no especificado</h3>
+        <p>Con el ajuste de penalización descrito, se observó un patrón de comportamiento que no formaba parte del diseño original: la presa permanece inmóvil mientras no detecta al depredador, y solo inicia desplazamiento al recibir esa señal por su sensor.</p>
+        <pre><code>paso 23: depredador detecta presa = False | acción presa = 4 (permanecer)
+paso 24: depredador detecta presa = True
+paso 25: acción presa = 0 (arriba)  ← inicia evasión al ser detectada</code></pre>
+        <div class="finding">
+          <p class="f-label">interpretación</p>
+          <p>Es una política razonable, aunque subóptima: moverse sin necesidad implica riesgo de colisión sin ningún beneficio si no hay amenaza cerca. La red llegó sola a esa idea, sin que nadie se la programara: una estrategia de <span class="tag-prey">espera y reacción</span> sale más barata que moverse sin rumbo.</p>
+        </div>
+        <div class="finding">
+          <p class="f-label">límite observado</p>
+          <p>Esta política reactiva depende por completo de que el depredador se mantenga dentro del alcance del sensor. En una corrida de evaluación posterior, el depredador perdió de vista a la presa tras una persecución y se quedó quieto en <code>(7,9)</code>, mientras la presa se quedó en <code>(9,0)</code> (a 9 celdas de distancia) durante los últimos 20 pasos del episodio. Ninguno de los dos agentes aprendió a buscar activamente cuando pierde de vista al otro; ambos se quedan quietos ante la falta de señal, en vez de explorar.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.10</p>
+        <h3 class="entry-title">No estacionariedad en el entrenamiento simultáneo</h3>
+        <p>Cuando únicamente el <span class="tag-pred">depredador</span> aprendía, enfrentando una presa con política aleatoria, su tasa de captura aumentó y se estabilizó en 100%. Al entrenar ambos agentes de forma simultánea, la tasa de captura aumenta inicialmente y luego <strong>oscila</strong>, sin converger a un valor único.</p>
+        <div class="finding">
+          <p class="f-label">interpretación</p>
+          <p>El fenómeno corresponde a la no estacionariedad propia de los entornos multiagente: desde la perspectiva de cualquiera de los dos agentes, el entorno cambia todo el tiempo, porque el otro agente también está actualizando su política. Cada mejora de un lado obliga al otro a adaptarse, y no hay garantía de que exista un equilibrio estable entre ambos.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <p class="entry-num">2.11</p>
+        <h3 class="entry-title">Líneas de trabajo pendientes</h3>
+        <p>Quedan pendientes estas extensiones:</p>
+        <ul class="todo-list">
+          <li>Sumar a la recompensa de la presa un término proporcional a la distancia respecto al depredador, en lugar de basarla solo en la supervivencia, para incentivar evasión activa.</li>
+          <li>Extender el número de episodios de entrenamiento (o la capacidad de la red) para ver si la oscilación de 2.10 converge a un equilibrio o es un ciclo persistente.</li>
+          <li>Registrar la curva de error cuadrático de <code>train_step</code> durante el entrenamiento, para ver el efecto de la red objetivo directamente en vez de inferirlo solo de la tasa de captura.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    Cada ecuación de esta bitácora corresponde a código ejecutado y depurado durante el desarrollo del proyecto.
+  </footer>
+
+</div>
+
+<script>
+  const CELL = 1.0;
+  // Debe coincidir exactamente con LIDAR_DIRECTIONS en predator_prey_env.py
+  const LIDAR_DIRECTIONS = [
+    [0, -1], [1, -1], [1, 0], [1, 1],
+    [0, 1], [-1, 1], [-1, 0], [-1, -1],
+  ];
+  const LIDAR_MAX_RANGE = 6;
+  let maze = null;
+  let scene, camera, renderer;
+  let predatorMesh, preyMesh;
+  let episode = null;
+  let frameIndex = 0;
+  let playing = false;
+  let lidarGroup = null;
+  let showLidar = true;
+  let fogMeshes = null;
+
+  const statusEl = document.getElementById('status');
+  const playBtn = document.getElementById('playBtn');
+  const stepBtn = document.getElementById('stepBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const scrubber = document.getElementById('scrubber');
+  const fileInput = document.getElementById('fileInput');
+  const fogView = document.getElementById('fogView');
+  const lidarToggle = document.getElementById('lidarToggle');
+
+  function setStatus(msg) { statusEl.textContent = msg; }
+
+  async function loadMaze() {
+    try {
+      const res = await fetch('maze_config.json');
+      maze = await res.json();
+    } catch (e) {
+      maze = {
+        width: 10, height: 10,
+        walls: [[2,0],[2,1],[2,2],[2,4],[2,5],[2,6],[2,7],[5,2],[5,3],[5,4],[5,5],
+                 [5,7],[5,8],[5,9],[7,1],[7,2],[7,3],[7,5],[7,6],[7,7],[7,8]],
+        predator_start: [0,0], prey_start: [9,9], max_steps: 100
+      };
+      setStatus('No fue posible obtener maze_config.json (probablemente el archivo se abrió vía file://), así que se usa un laberinto por defecto.');
+    }
+    initScene();
+    loadDefaultEpisode();
+  }
+
+  async function loadDefaultEpisode() {
+    try {
+      const res = await fetch('episode.json');
+      if (!res.ok) throw new Error('episode.json no encontrado');
+      const frames = await res.json();
+      loadEpisode(frames);
+    } catch (e) {
+      setStatus('Laberinto cargado. Seleccione un archivo de episodio (JSON) para reproducirlo.');
+    }
+  }
+
+  function initScene() {
+    const w = maze.width, h = maze.height;
+    const viewSize = Math.max(w, h) * CELL + 2;
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x14150f);
+
+    const aspect = 1;
+    camera = new THREE.OrthographicCamera(
+      -viewSize * aspect / 2, viewSize * aspect / 2,
+      viewSize / 2, -viewSize / 2, 0.1, 100
+    );
+    camera.position.set(w / 2, 20, h / 2);
+    camera.lookAt(w / 2 - 0.5, 0, h / 2 - 0.5);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    const size = 560;
+    renderer.setSize(size, size);
+    document.getElementById('canvas-wrap').appendChild(renderer.domElement);
+
+    const floorGeo = new THREE.PlaneGeometry(w, h);
+    const floorMat = new THREE.MeshBasicMaterial({ color: 0x1b1c15, side: THREE.DoubleSide });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(w / 2 - 0.5, -0.01, h / 2 - 0.5);
+    scene.add(floor);
+
+    const grid = new THREE.GridHelper(Math.max(w, h), Math.max(w, h), 0x34362a, 0x34362a);
+    grid.position.set(w / 2 - 0.5, 0, h / 2 - 0.5);
+    scene.add(grid);
+
+    const wallGeo = new THREE.BoxGeometry(0.9, 0.9, 0.9);
+    const wallMat = new THREE.MeshBasicMaterial({ color: 0x6b8a54 });
+    maze.walls.forEach(([x, y]) => {
+      const wall = new THREE.Mesh(wallGeo, wallMat);
+      wall.position.set(x, 0.45, y);
+      scene.add(wall);
+    });
+
+    const predGeo = new THREE.SphereGeometry(0.32, 20, 20);
+    const predMat = new THREE.MeshBasicMaterial({ color: 0xe07a4a });
+    predatorMesh = new THREE.Mesh(predGeo, predMat);
+
+    const preyGeo = new THREE.SphereGeometry(0.28, 20, 20);
+    const preyMat = new THREE.MeshBasicMaterial({ color: 0x6fb0c2 });
+    preyMesh = new THREE.Mesh(preyGeo, preyMat);
+
+    scene.add(predatorMesh, preyMesh);
+
+    lidarGroup = new THREE.Group();
+    scene.add(lidarGroup);
+
+    buildFogGrid();
+    setAgentPositions(maze.predator_start, maze.prey_start);
+    renderer.render(scene, camera);
+    setStatus('Laberinto cargado. Seleccione un archivo de episodio (JSON) para reproducirlo.');
+  }
+
+  function buildFogGrid() {
+    const fogGeo = new THREE.PlaneGeometry(0.98, 0.98);
+    const fogMat = () => new THREE.MeshBasicMaterial({
+      color: 0x0a0b07, transparent: true, opacity: 0.92, depthWrite: false,
+    });
+    fogMeshes = [];
+    for (let y = 0; y < maze.height; y++) {
+      const rowMeshes = [];
+      for (let x = 0; x < maze.width; x++) {
+        const plane = new THREE.Mesh(fogGeo, fogMat());
+        plane.rotation.x = -Math.PI / 2;
+        plane.position.set(x, 0.03, y);
+        scene.add(plane);
+        rowMeshes.push(plane);
+      }
+      fogMeshes.push(rowMeshes);
+    }
+  }
+
+  function isKnown(frame, x, y, view) {
+    if (view === 'none') return true;
+    if (!frame.predator_map || !frame.prey_map) return true;
+    const predKnown = frame.predator_map[y][x] !== '?';
+    const preyKnown = frame.prey_map[y][x] !== '?';
+    if (view === 'predator') return predKnown;
+    if (view === 'prey') return preyKnown;
+    if (view === 'union') return predKnown || preyKnown;
+    return true;
+  }
+
+  function updateFog(frame) {
+    if (!fogMeshes) return;
+    const view = fogView.value;
+    for (let y = 0; y < maze.height; y++) {
+      for (let x = 0; x < maze.width; x++) {
+        fogMeshes[y][x].visible = !isKnown(frame, x, y, view);
+      }
+    }
+  }
+
+  function drawLidarForAgent(originPos, lidarReadings, baseColorHex) {
+    if (!lidarReadings) return;
+    const rayMat = new THREE.LineBasicMaterial({ color: baseColorHex, transparent: true, opacity: 0.55 });
+    const hitDotGeo = new THREE.SphereGeometry(0.09, 10, 10);
+    const hitDotMat = new THREE.MeshBasicMaterial({ color: 0xe8b23d });
+    const [ox, oy] = originPos;
+
+    LIDAR_DIRECTIONS.forEach(([dx, dy], i) => {
+      const reading = lidarReadings[i];
+      const wallCells = reading.wall_dist * LIDAR_MAX_RANGE;
+      if (wallCells <= 0) return;
+
+      const endX = ox + dx * wallCells;
+      const endZ = oy + dy * wallCells;
+      const points = [
+        new THREE.Vector3(ox, 0.12, oy),
+        new THREE.Vector3(endX, 0.12, endZ),
+      ];
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geo, rayMat);
+      lidarGroup.add(line);
+
+      if (reading.agent_detected) {
+        const hitCells = reading.agent_dist * LIDAR_MAX_RANGE;
+        const hitX = ox + dx * hitCells;
+        const hitZ = oy + dy * hitCells;
+        const dot = new THREE.Mesh(hitDotGeo, hitDotMat);
+        dot.position.set(hitX, 0.14, hitZ);
+        lidarGroup.add(dot);
+      }
+    });
+  }
+
+  function updateLidar(frame) {
+    while (lidarGroup.children.length > 0) {
+      lidarGroup.remove(lidarGroup.children[0]);
+    }
+    if (!showLidar) return;
+    drawLidarForAgent(frame.predator, frame.predator_lidar, 0xe07a4a);
+    drawLidarForAgent(frame.prey, frame.prey_lidar, 0x6fb0c2);
+  }
+
+  function setAgentPositions(predPos, preyPos) {
+    predatorMesh.position.set(predPos[0], 0.32, predPos[1]);
+    preyMesh.position.set(preyPos[0], 0.28, preyPos[1]);
+    renderer.render(scene, camera);
+  }
+
+  function loadEpisode(frames) {
+    episode = frames;
+    frameIndex = 0;
+    scrubber.max = episode.length - 1;
+    scrubber.value = 0;
+    [playBtn, stepBtn, resetBtn, scrubber, fogView, lidarToggle].forEach(el => el.disabled = false);
+    renderFrame(0);
+    setStatus(`Episodio cargado: ${episode.length} pasos.`);
+  }
+
+  function renderFrame(i) {
+    if (!episode) return;
+    frameIndex = Math.max(0, Math.min(i, episode.length - 1));
+    const f = episode[frameIndex];
+    setAgentPositions(f.predator, f.prey);
+    updateFog(f);
+    updateLidar(f);
+    scrubber.value = frameIndex;
+    const caughtNote = f.caught ? ' - encuentro registrado' : '';
+    setStatus(`Paso ${frameIndex + 1} / ${episode.length}${caughtNote}`);
+    if (f.caught) { playing = false; playBtn.textContent = 'Reproducir'; }
+  }
+
+  function tick() {
+    if (!playing) return;
+    if (frameIndex >= episode.length - 1) {
+      playing = false;
+      playBtn.textContent = 'Reproducir';
+      return;
+    }
+    renderFrame(frameIndex + 1);
+    setTimeout(tick, 80);
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (!episode) return;
+    playing = !playing;
+    playBtn.textContent = playing ? 'Pausar' : 'Reproducir';
+    if (playing) tick();
+  });
+
+  stepBtn.addEventListener('click', () => {
+    playing = false;
+    playBtn.textContent = 'Reproducir';
+    renderFrame(frameIndex + 1);
+  });
+
+  resetBtn.addEventListener('click', () => {
+    playing = false;
+    playBtn.textContent = 'Reproducir';
+    renderFrame(0);
+  });
+
+  scrubber.addEventListener('input', (e) => {
+    playing = false;
+    playBtn.textContent = 'Reproducir';
+    renderFrame(parseInt(e.target.value, 10));
+  });
+
+  fogView.addEventListener('change', () => {
+    if (episode) renderFrame(frameIndex);
+  });
+
+  lidarToggle.addEventListener('change', () => {
+    showLidar = lidarToggle.checked;
+    if (episode) renderFrame(frameIndex);
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const frames = JSON.parse(ev.target.result);
+        loadEpisode(frames);
+      } catch (err) {
+        setStatus('No fue posible interpretar el archivo seleccionado como JSON de episodio.');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  loadMaze();
+
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ]
+    });
+  });
+</script>
+</body>
+</html>
