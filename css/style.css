@@ -191,7 +191,7 @@ body {
   display: block;
 }
  .project-preview-dqn {
-  max-height: 260px;
+  max-height: 360px;
   object-fit: cover;
   object-position: center 70%;
 }
