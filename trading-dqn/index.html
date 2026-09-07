@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deep Q-Learning para Trading Algorítmico</title>
+<title>Un agente de Deep Q-Learning para trading</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,110 +38,65 @@
   }
 
   .page {
-    max-width: 820px;
+    max-width: 780px;
     margin: 0 auto;
-    padding: 64px 28px 120px;
+    padding: 64px 28px 100px;
   }
 
-  /* ---------- Masthead ---------- */
-  .masthead { margin-bottom: 48px; }
+  /* ---------- Header ---------- */
+  .masthead { margin-bottom: 40px; }
 
   .kicker {
-    display: flex;
-    gap: 8px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 22px;
-  }
-
-  .badge {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--gold);
-    border: 1px solid var(--line);
-    padding: 3px 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
   }
 
   .masthead h1 {
     font-family: 'Fraunces', serif;
     font-weight: 600;
     font-size: 34px;
-    line-height: 1.25;
-    max-width: 20ch;
-    margin: 0 0 24px;
+    line-height: 1.2;
+    max-width: 18ch;
+    margin: 0 0 16px;
   }
 
-  .authors {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--text);
-    margin-bottom: 4px;
+  .lede {
+    font-size: 17px;
+    color: #c9cbb9;
+    max-width: 56ch;
   }
 
-  .affil {
+  .meta-line {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12.5px;
     color: var(--muted);
-  }
-
-  /* ---------- Section nav ---------- */
-  .section-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 32px 0 8px;
-  }
-  .section-nav a {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-    text-decoration: none;
-    border: 1px solid var(--line);
-    padding: 7px 12px;
-  }
-  .section-nav a:hover { color: var(--text); border-color: var(--muted); }
-
-  /* ---------- Abstract ---------- */
-  .abstract {
-    background: var(--panel);
-    border-left: 3px solid var(--gold);
-    padding: 20px 24px;
-    margin: 32px 0;
-    font-size: 15px;
-  }
-  .abstract h3 {
-    margin-top: 0;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--gold);
+    margin-top: 20px;
   }
 
   h2 {
     font-family: 'Fraunces', serif;
     font-weight: 600;
     font-size: 24px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 10px;
-    margin-top: 56px;
+    margin-top: 52px;
+    margin-bottom: 6px;
   }
+
   h3 {
     font-family: 'Fraunces', serif;
     font-weight: 600;
     font-size: 19px;
-    margin-top: 32px;
+    margin-top: 30px;
     color: var(--text);
   }
 
   p { text-align: justify; margin: 16px 0; color: #dcded1; }
 
   /* ---------- Equations ---------- */
-  .eq-wrap { margin: 28px 0 32px; }
+  .eq-wrap { margin: 24px 0 28px; }
   .eq-block {
     margin: 0;
     padding: 16px 20px;
@@ -251,36 +206,13 @@
     padding: 0 4px;
   }
 
-  .note {
-    font-size: 13.5px;
-    color: var(--muted);
-    border-top: 1px dashed var(--line);
-    padding-top: 10px;
-    margin-top: 10px;
-  }
   .footnote { font-size: 12.5px; color: var(--muted); }
 
   ol, ul { text-align: justify; }
   ol li, ul li { margin-bottom: 10px; }
 
-  .references { font-size: 14px; }
-  .references p {
-    text-indent: -1.4rem;
-    padding-left: 1.4rem;
-    margin: 10px 0;
-    color: #c9cbb9;
-  }
-
-  .keywords {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    margin-top: 14px;
-    color: var(--muted);
-  }
-  .keywords strong { color: var(--text); font-weight: 500; }
-
   footer.doc-footer {
-    margin-top: 64px;
+    margin-top: 56px;
     padding-top: 20px;
     border-top: 1px solid var(--line);
     font-family: 'JetBrains Mono', monospace;
@@ -293,68 +225,29 @@
 <div class="page">
 
   <div class="masthead">
-    <div class="kicker">
-      <span class="badge">Proyecto Personal</span><span class="badge">Trabajo en Curso</span>
-    </div>
-    <h1>Un Agente de Deep Q-Learning para Trading Algorítmico</h1>
-    <p class="authors">D. Quispe</p>
-    <p class="affil">Diseño, implementación y evaluación empírica en datos sintéticos y reales &middot; Septiembre 2026</p>
-
-    <nav class="section-nav">
-      <a href="#intro">1. Intro</a>
-      <a href="#metodologia">2. Metodología</a>
-      <a href="#resultados">3. Resultados</a>
-      <a href="#profundidad">4. Profundidad de red</a>
-      <a href="#discusion">5. Discusión</a>
-      <a href="#limitaciones">6. Limitaciones</a>
-      <a href="#conclusion">7. Conclusión</a>
-    </nav>
-  </div>
-
-  <div class="abstract">
-    <h3>Resumen</h3>
-    <p>
-    Presentamos el diseño e implementación de un agente de <em>Deep Q-Learning</em> (DQN) aplicado a la decisión binaria
-    de posición (largo / plano) sobre series de precios diarias. El agente, incluyendo la red neuronal, se implementó
-    íntegramente en NumPy, sin frameworks de diferenciación automática, con una arquitectura de profundidad
-    configurable. Se construyó además un marco de backtesting con cuatro métricas estándar de evaluación financiera
-    (retorno total, ratio de Sharpe, máximo drawdown, y win rate), comparando el desempeño del agente contra una
-    estrategia de referencia de <em>buy & hold</em>. Se evaluó el sistema en tres escenarios de datos (una serie
-    sintética y dos series reales, MU y AAPL) y dos arquitecturas de red (una capa oculta vs. tres capas ocultas).
-    Con la red superficial, el agente superó al benchmark únicamente en el escenario sintético, rindiendo por debajo
-    en ambos escenarios reales. Al aumentar la profundidad de la red, el desempeño mejoró sustancialmente en los
-    escenarios reales, alcanzando un ratio de Sharpe superior al del benchmark en ambos activos, aunque sin
-    superarlo en retorno total absoluto. Discutimos las implicancias de este hallazgo -que separa la
-    capacidad de representación del modelo del efecto del régimen de mercado- junto con las limitaciones
-    metodológicas del estudio, en particular el reducido número de episodios de entrenamiento y la ausencia de
-    validación walk-forward.
+    <div class="kicker">Proyecto personal &middot; trabajo en curso</div>
+    <h1>Un agente de Deep Q-Learning para trading</h1>
+    <p class="lede">
+    Le enseñé a una red neuronal, construida desde cero en NumPy, a decidir cuándo estar
+    comprado y cuándo quedarse afuera del mercado. Esto es cómo la armé, qué métricas usé
+    para juzgarla, y qué pasó cuando la probé contra simplemente comprar y no soltar.
     </p>
-    <p class="keywords"><strong>Palabras clave:</strong> reinforcement learning, DQN, trading algorítmico, backtesting, ratio de Sharpe</p>
+    <p class="meta-line">D. Quispe &middot; Septiembre 2026</p>
   </div>
 
-  <h2 id="intro">1. Introducción</h2>
   <p>
-  El aprendizaje por refuerzo profundo (<em>Deep Reinforcement Learning</em>, DRL) combina el marco de decisión
-  secuencial del aprendizaje por refuerzo con la capacidad de aproximación de funciones de las redes neuronales
-  profundas, permitiendo a un agente aprender políticas de decisión directamente de la interacción con un entorno,
-  sin necesidad de una tabla de valores explícita para cada estado posible <sup>[1]</sup>. Este trabajo aplica dicho
-  marco al problema de asignación binaria de posición en un activo financiero: en cada instante de tiempo, el agente
-  decide si mantener una posición larga (comprado) o plana (sin exposición), con el objetivo de maximizar el retorno
-  acumulado ajustado por el costo de transacción de cambiar de posición.
-  </p>
-  <p>
-  El objetivo de este trabajo no es proponer una estrategia de trading lista para producción, sino documentar de
-  forma honesta el proceso de construcción, entrenamiento y <em>evaluación crítica</em> de un agente DRL, incluyendo
-  los casos en los que su desempeño resultó inferior al de la estrategia de referencia. Sostenemos que esta
-  transparencia es metodológicamente más valiosa que reportar únicamente resultados favorables.
+  La idea es simple de decir y menos simple de lograr: en cada día de mercado, el agente
+  decide entre dos posiciones -comprado o afuera- tratando de ganarle a la estrategia más
+  aburrida y difícil de vencer que existe, quedarse comprado siempre (<em>buy & hold</em>).
+  No fue un ejercicio de "hice un modelo y ganó plata" -de hecho, en dos de los tres casos
+  que probé, perdió contra el benchmark- sino de documentar honestamente qué funcionó, qué
+  no, y por qué.
   </p>
 
-  <h2 id="metodologia">2. Metodología</h2>
-
-  <h3>2.1. Formalización del entorno</h3>
+  <h2>El entorno: qué ve el agente y cómo se le paga</h2>
   <p>
-  El entorno se modela como un proceso de decisión markoviano simplificado. Dada una serie de precios de cierre
-  \(P = (p_0, p_1, \dots, p_T)\), definimos el retorno diario como:
+  Todo empieza con una serie de precios de cierre \(P = (p_0, p_1, \dots, p_T)\). De ahí sale
+  el retorno diario:
   </p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(1)</span>
@@ -364,59 +257,56 @@
       <span class="term"><dt>\(r_t\)</dt><dd>retorno porcentual del día \(t\) al \(t+1\).</dd></span>
       <span class="term"><dt>\(p_t\)</dt><dd>precio de cierre en el día \(t\).</dd></span>
     </dl>
-    <p class="intuicion"><strong>Intuición:</strong> "¿qué porcentaje subió o bajó el precio de un día al
-    siguiente?" - es el cambio absoluto \((p_{t+1}-p_t)\) expresado en relación al precio de partida, para que
-    el resultado sea comparable entre activos de distinto valor nominal.</p>
+    <p class="intuicion"><strong>En criollo:</strong> "¿qué porcentaje subió o bajó el precio de un día al
+    siguiente?" - el cambio \((p_{t+1}-p_t)\) expresado como fracción del precio de partida, para
+    que el número sea comparable entre activos de distinto valor.</p>
   </div>
 
   <p>
-  El espacio de acciones es discreto y binario, \(a_t \in \{0, 1\}\), donde \(0\) representa la posición plana y
-  \(1\) la posición larga. El estado observado por el agente en el instante \(t\) es la concatenación de la ventana
-  de las últimas \(w\) observaciones de retorno junto con la posición actual:
+  El agente solo puede tomar dos acciones, \(a_t \in \{0, 1\}\): \(0\) es estar afuera, \(1\) es
+  estar comprado. Lo que "ve" en cada momento no es toda la historia de precios, sino una ventana
+  de los últimos \(w\) retornos más su posición actual:
   </p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(2)</span>
     \[ s_t = \big(\, r_{t-w}, \, r_{t-w+1}, \, \dots, \, r_{t-1}, \, a_{t-1} \,\big) \in \mathbb{R}^{w+1} \]
     </div>
     <dl class="eq-legend">
-      <span class="term"><dt>\(s_t\)</dt><dd>estado que recibe el agente en el instante \(t\) - lo único que "ve" para decidir.</dd></span>
-      <span class="term"><dt>\(w\)</dt><dd>tamaño de la ventana de historia (\(w=10\) en los experimentos).</dd></span>
-      <span class="term"><dt>\(a_{t-1}\)</dt><dd>la posición que el agente ya tenía un instante antes.</dd></span>
+      <span class="term"><dt>\(s_t\)</dt><dd>lo único que el agente "ve" para decidir en el instante \(t\).</dd></span>
+      <span class="term"><dt>\(w\)</dt><dd>tamaño de la ventana (\(w=10\) en mis pruebas).</dd></span>
+      <span class="term"><dt>\(a_{t-1}\)</dt><dd>si ya estaba comprado o no, un paso antes.</dd></span>
     </dl>
-    <p class="intuicion"><strong>Intuición:</strong> el agente no ve toda la historia de precios, solo una
-    "ventanita" de los últimos \(w\) retornos diarios, más un dato de memoria: si ya estaba comprado o no.
-    \(\mathbb{R}^{w+1}\) simplemente indica que es un vector de \(w+1\) números reales (los \(w\) retornos, más
-    la posición).</p>
+    <p class="intuicion"><strong>En criollo:</strong> una "ventanita" de los últimos \(w\) días,
+    más un dato de memoria (¿ya estaba adentro?). \(\mathbb{R}^{w+1}\) es solo notación para
+    decir "un vector de \(w+1\) números reales".</p>
   </div>
 
   <p>
-  La recompensa combina el retorno efectivamente capturado por la posición mantenida con una penalización de costo
-  de transacción \(c\) aplicada únicamente cuando la acción implica un cambio de posición respecto al paso anterior:
+  Y la recompensa: si está comprado, se embolsa el retorno del día; si cambia de posición,
+  paga un costo de transacción.
   </p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(3)</span>
     \[ R_t = a_t \cdot r_t \; - \; c \cdot \mathbb{1}[a_t \neq a_{t-1}] \]
     </div>
     <dl class="eq-legend">
-      <span class="term"><dt>\(R_t\)</dt><dd>recompensa que recibe el agente en el paso \(t\).</dd></span>
-      <span class="term"><dt>\(c\)</dt><dd>costo de transacción por cambiar de posición (\(c=0.0005\), 5 puntos básicos).</dd></span>
-      <span class="term"><dt>\(\mathbb{1}[\cdot]\)</dt><dd>función indicadora: vale 1 si la condición entre corchetes es verdadera, 0 si no.</dd></span>
+      <span class="term"><dt>\(R_t\)</dt><dd>recompensa del paso \(t\).</dd></span>
+      <span class="term"><dt>\(c\)</dt><dd>costo por cambiar de posición (\(c=0.0005\), 5 puntos básicos).</dd></span>
+      <span class="term"><dt>\(\mathbb{1}[\cdot]\)</dt><dd>1 si la condición es verdadera, 0 si no.</dd></span>
     </dl>
-    <p class="intuicion"><strong>Intuición:</strong> si el agente está en posición larga (\(a_t=1\)), se
-    "embolsa" el retorno del día (\(r_t\)); si está plano (\(a_t=0\)), ese término se anula y no gana ni pierde
-    nada. El segundo término solo se activa (resta \(c\)) el día en que el agente <em>cambia</em> de posición
-    respecto al día anterior - es el costo de "entrar" o "salir" del mercado.</p>
+    <p class="intuicion"><strong>En criollo:</strong> si está comprado (\(a_t=1\)) se queda con
+    \(r_t\); si está afuera, ese término es cero. El segundo término solo se activa el día que
+    <em>cambia</em> de posición respecto al día anterior -el costo de entrar o salir.</p>
   </div>
   <p>
-  En los experimentos reportados, \(w = 10\) y \(c = 0.0005\) (5 puntos básicos por cambio de posición).
+  En todas las pruebas usé \(w = 10\) y \(c = 0.0005\).
   </p>
 
-  <h3>2.2. Arquitectura del agente</h3>
+  <h2>La red y cómo entrena</h2>
   <p>
-  El agente aproxima la función de valor-acción \(Q(s,a)\) mediante un perceptrón multicapa de profundidad
-  configurable, implementado sin librerías de diferenciación automática. Dada una lista de tamaños de capa
-  \((n_0, n_1, \dots, n_L)\), con \(n_0 = w+1\) (dimensión del estado) y \(n_L = 2\) (número de acciones), el
-  forward pass se define recursivamente para cada capa \(i = 1, \dots, L\):
+  Nada de PyTorch ni TensorFlow acá -la red que aproxima \(Q(s,a)\) la escribí a mano,
+  perceptrón multicapa con forward y backward propagation implementados desde cero. Dada una
+  lista de tamaños de capa \((n_0, \dots, n_L)\), cada capa hace lo mismo:
   </p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(4)</span>
@@ -424,196 +314,155 @@
        a^{(i)} = \begin{cases} \tanh(z^{(i)}) & i < L \\ z^{(i)} & i = L \end{cases} \]
     </div>
     <dl class="eq-legend">
-      <span class="term"><dt>\(z^{(i)}\)</dt><dd>salida "cruda" (lineal) de la capa \(i\), antes de la activación.</dd></span>
-      <span class="term"><dt>\(a^{(i)}\)</dt><dd>salida de la capa \(i\) ya con la activación aplicada; es la entrada de la capa \(i+1\).</dd></span>
-      <span class="term"><dt>\(W_i, b_i\)</dt><dd>pesos y sesgo de la capa \(i\) - los parámetros que se ajustan durante el entrenamiento.</dd></span>
-      <span class="term"><dt>\(L\)</dt><dd>número total de capas (\(L=2\): una oculta; \(L=4\): tres ocultas).</dd></span>
+      <span class="term"><dt>\(z^{(i)}\)</dt><dd>salida lineal de la capa \(i\), antes de la activación.</dd></span>
+      <span class="term"><dt>\(a^{(i)}\)</dt><dd>salida ya activada; entra a la capa \(i+1\).</dd></span>
+      <span class="term"><dt>\(W_i, b_i\)</dt><dd>los parámetros que se ajustan al entrenar.</dd></span>
+      <span class="term"><dt>\(L\)</dt><dd>total de capas (\(L=2\): una oculta; \(L=4\): tres ocultas).</dd></span>
     </dl>
-    <p class="intuicion"><strong>Intuición:</strong> cada capa hace lo mismo -multiplica su entrada por
-    una matriz de pesos, suma un sesgo, y "curva" el resultado con \(\tanh\)- y pasa el resultado a la
-    siguiente. La única excepción es la última capa (\(i=L\)), que se deja sin curvar, porque su salida
-    representa valores Q y estos pueden ser cualquier número real, no solo el rango \((-1,1)\) que produce
-    \(\tanh\).</p>
+    <p class="intuicion"><strong>En criollo:</strong> multiplica por pesos, suma un sesgo, curva
+    con \(\tanh\), y pasa el resultado a la siguiente capa. La última capa se deja sin curvar
+    porque los valores Q pueden ser cualquier número real, no solo \((-1,1)\).</p>
   </div>
   <p>
-  con \(a^{(0)} = s\) (el estado de entrada) y \(a^{(L)} = Q(s,\cdot)\) (la salida final). Se evaluaron dos
-  configuraciones de profundidad: una red superficial de una capa oculta de 64 unidades (\(L=2\)), y una red
-  profunda de tres capas ocultas de 64 unidades cada una (\(L=4\)).
-  </p>
-  <p>
-  El entrenamiento sigue el algoritmo DQN estándar <sup>[2]</sup>: se mantiene una red objetivo \(Q_{\theta^-}\),
-  actualizada periódicamente por copia directa de los pesos de la red principal \(Q_\theta\) (sin promediado
-  exponencial), y un buffer de repetición de experiencia del cual se muestrean minibatches de forma independiente
-  e idénticamente distribuida para romper la correlación temporal de las transiciones consecutivas. El objetivo
-  de entrenamiento (target TD) para una transición \((s, a, r, s')\) es:
+  Probé dos profundidades: una capa oculta de 64 unidades, y tres capas ocultas de 64 cada una.
+  Para entrenar usé DQN estándar -una red objetivo que se sincroniza cada 10 episodios (sin
+  promediado, copia directa de pesos), y un buffer de repetición del que se muestrean
+  minibatches para no entrenar con transiciones correlacionadas. El objetivo de entrenamiento
+  para una transición \((s, a, r, s')\):
   </p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(5)</span>
     \[ y = r + \gamma \max_{a'} Q_{\theta^-}(s', a') \]
     </div>
     <dl class="eq-legend">
-      <span class="term"><dt>\(y\)</dt><dd>el valor "objetivo" contra el cual se compara la predicción de la red, durante el entrenamiento.</dd></span>
-      <span class="term"><dt>\(\gamma\)</dt><dd>factor de descuento (\(\gamma=0.99\)): cuánto pesa el futuro frente al presente.</dd></span>
-      <span class="term"><dt>\(Q_{\theta^-}\)</dt><dd>la red objetivo (una copia congelada de la red principal, sincronizada cada 10 episodios).</dd></span>
+      <span class="term"><dt>\(y\)</dt><dd>lo que la red "debería" haber predicho.</dd></span>
+      <span class="term"><dt>\(\gamma\)</dt><dd>factor de descuento (\(\gamma=0.99\)): cuánto pesa el futuro.</dd></span>
+      <span class="term"><dt>\(Q_{\theta^-}\)</dt><dd>la red objetivo, una copia congelada de la principal.</dd></span>
     </dl>
-    <p class="intuicion"><strong>Intuición:</strong> "lo que debería haber predicho la red" es la recompensa
-    real que se obtuvo (\(r\)) más una estimación de cuánto vale el mejor futuro posible desde el estado
-    siguiente. Se usa la red objetivo (y no la red que se está actualizando) para estimar ese futuro, porque
-    hacerlo con la misma red que se entrena en simultáneo generaría un objetivo que se mueve constantemente,
-    dificultando la convergencia.</p>
+    <p class="intuicion"><strong>En criollo:</strong> la recompensa real más una estimación de
+    cuánto vale el mejor futuro posible. Se usa la red congelada (no la que se está
+    actualizando) para estimar ese futuro, porque si no, el objetivo se mueve todo el tiempo y
+    nunca converge.</p>
   </div>
   <p>
-  y los parámetros \(\theta = \{W_i, b_i\}_{i=1}^{L}\) se actualizan minimizando el error cuadrático medio
-  \(\mathcal{L} = \big(Q_\theta(s,a) - y\big)^2\) mediante retropropagación manual a través de todas las capas
-  (regla de la cadena aplicada capa por capa, de salida a entrada) y el optimizador Adam <sup>[3]</sup>. Se usó
-  \(\gamma = 0.99\).
+  Los pesos se actualizan minimizando \(\mathcal{L} = (Q_\theta(s,a) - y)^2\) con
+  retropropagación manual capa por capa y Adam como optimizador.
   </p>
 
-  <h3>2.3. Política de exploración</h3>
+  <h3>Exploración</h3>
   <p>
-  Se empleó una política \(\varepsilon\)-greedy con decaimiento exponencial en función del episodio \(e\):
+  Política \(\varepsilon\)-greedy con decaimiento exponencial:
   </p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(6)</span>
     \[ \varepsilon(e) = \max\big(\varepsilon_{\min},\; \varepsilon_0 \cdot \rho^{\,e}\big) \]
     </div>
     <dl class="eq-legend">
-      <span class="term"><dt>\(\varepsilon(e)\)</dt><dd>probabilidad de tomar una acción aleatoria en el episodio \(e\), en vez de la mejor conocida.</dd></span>
-      <span class="term"><dt>\(\varepsilon_0, \varepsilon_{\min}\)</dt><dd>valor inicial (1.0) y piso mínimo (0.05) de exploración.</dd></span>
-      <span class="term"><dt>\(\rho\)</dt><dd>tasa de decaimiento por episodio (\(\rho=0.995\)).</dd></span>
+      <span class="term"><dt>\(\varepsilon(e)\)</dt><dd>probabilidad de actuar al azar en el episodio \(e\).</dd></span>
+      <span class="term"><dt>\(\varepsilon_0, \varepsilon_{\min}\)</dt><dd>inicial (1.0) y piso (0.05).</dd></span>
+      <span class="term"><dt>\(\rho\)</dt><dd>tasa de decaimiento (\(\rho=0.995\)).</dd></span>
     </dl>
-    <p class="intuicion"><strong>Intuición:</strong> al principio (\(e=0\)) el agente explora siempre
-    (\(\varepsilon=1.0\), decisiones 100% al azar, para conocer el entorno). A medida que \(e\) crece,
-    \(\rho^e\) se va achicando geométricamente y \(\varepsilon\) baja con él - el agente confía cada vez más en
-    lo aprendido. El \(\max(\varepsilon_{\min}, \cdot)\) evita que la exploración llegue a cero del todo, para
-    no quedar atrapado en una política subóptima sin poder corregirla.</p>
+    <p class="intuicion"><strong>En criollo:</strong> al principio explora siempre (al azar,
+    100%). A medida que pasan los episodios, confía cada vez más en lo aprendido. El piso
+    mínimo evita que deje de explorar del todo y se quede atascado en una mala política.</p>
   </div>
 
-  <h3>2.4. Métricas de evaluación</h3>
+  <h2>Cómo lo juzgo</h2>
   <p>
-  Dada una curva de equity \(E = (E_0, E_1, \dots, E_n)\) con \(E_0 = 1\) (el equity es el valor del portafolio,
-  expresado como múltiplo del capital inicial), se definieron cuatro métricas:
+  Cuatro métricas estándar, calculadas sobre la curva de equity \(E = (E_0, \dots, E_n)\) con
+  \(E_0 = 1\):
   </p>
 
-  <p><strong>Retorno total</strong> - la ganancia o pérdida porcentual de punta a punta del período:</p>
+  <p><strong>Retorno total</strong> -ganancia o pérdida de punta a punta:</p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(7)</span>
     \[ \text{RT} = \frac{E_n - E_0}{E_0} \]
     </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(E_0, E_n\)</dt><dd>equity al inicio y al final del período evaluado.</dd></span>
-    </dl>
   </div>
 
-  <p><strong>Ratio de Sharpe</strong> (anualizado, sobre los retornos diarios \(r_1, \dots, r_n\) de la curva de equity)
-  - el retorno promedio obtenido por cada unidad de riesgo (volatilidad) asumida:</p>
+  <p><strong>Ratio de Sharpe</strong> (anualizado) -retorno por unidad de riesgo asumido:</p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(8)</span>
     \[ \text{Sharpe} = \frac{\bar{r}}{\sigma_r} \sqrt{252} \]
     </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(\bar{r}\)</dt><dd>retorno diario promedio de la curva de equity.</dd></span>
-      <span class="term"><dt>\(\sigma_r\)</dt><dd>desvío estándar de esos retornos diarios (una medida de riesgo/volatilidad).</dd></span>
-      <span class="term"><dt>\(\sqrt{252}\)</dt><dd>factor de anualización (252 = días hábiles de mercado por año).</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Intuición:</strong> dos estrategias pueden tener el mismo retorno promedio, pero
-    si una lo logra con altibajos mucho más bruscos (\(\sigma_r\) grande), es "peor" en términos de riesgo. El
-    Sharpe penaliza esa volatilidad dividiendo por ella; el \(\sqrt{252}\) solo reescala el número a una base
-    anual comparable entre estrategias, sin cambiar cuál es mejor que cuál.</p>
+    <p class="intuicion"><strong>En criollo:</strong> dos estrategias pueden tener el mismo
+    retorno promedio, pero si una lo logra con altibajos mucho más bruscos, es "peor" en
+    términos de riesgo. El Sharpe divide por esa volatilidad; \(\sqrt{252}\) solo reescala a
+    una base anual.</p>
   </div>
 
-  <p><strong>Máximo drawdown</strong> - la peor caída porcentual sufrida desde un máximo histórico, en
-  cualquier punto del período:</p>
+  <p><strong>Máximo drawdown</strong> -la peor caída desde un máximo histórico:</p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(9)</span>
     \[ \text{MDD} = \min_t \left( \frac{E_t - \max_{i \le t} E_i}{\max_{i \le t} E_i} \right) \]
     </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(\max_{i \le t} E_i\)</dt><dd>el máximo valor de equity alcanzado hasta el instante \(t\) (el "pico" más reciente).</dd></span>
-      <span class="term"><dt>\(\min_t(\cdot)\)</dt><dd>se toma el peor valor (más negativo) de todos los instantes \(t\).</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Intuición:</strong> en cada día, se compara el equity actual contra el mayor
-    valor visto hasta ese momento (nunca contra el máximo de toda la serie, incluyendo el futuro). Eso da, día a
-    día, "cuánto llevo perdido desde mi mejor momento hasta ahora". El máximo drawdown es la peor de esas caídas
-    en todo el período -el escenario más doloroso que atravesó la estrategia, aunque después se haya
-    recuperado.</p>
+    <p class="intuicion"><strong>En criollo:</strong> día a día, "¿cuánto llevo perdido desde mi
+    mejor momento?". El máximo drawdown es la peor de esas caídas en todo el período -el
+    momento más doloroso, aunque después se recupere.</p>
   </div>
 
-  <p><strong>Win rate</strong> - la proporción de operaciones ganadoras sobre el total:</p>
+  <p><strong>Win rate</strong> -proporción de operaciones ganadoras:</p>
   <div class="eq-wrap">
     <div class="eq-block"><span class="eq-num">(10)</span>
     \[ \text{WR} = \frac{1}{N}\sum_{k=1}^{N} \mathbb{1}\!\left[\prod_{t \in \text{trade}_k}(1+r_t) - 1 > 0\right] \]
     </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(N\)</dt><dd>número total de operaciones (tramos continuos en posición larga).</dd></span>
-      <span class="term"><dt>\(\text{trade}_k\)</dt><dd>el conjunto de días que duró la operación número \(k\).</dd></span>
-      <span class="term"><dt>\(\prod_{t}(1+r_t) - 1\)</dt><dd>el retorno compuesto (no sumado) de esa operación completa.</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Intuición:</strong> los retornos diarios dentro de una misma operación se
-    <em>multiplican</em> entre sí (se componen), no se suman -igual que el interés compuesto-, porque
-    cada día parte del capital ya modificado por el día anterior. Si ese resultado compuesto de la operación es
-    positivo, cuenta como ganadora; el win rate es simplemente qué fracción de las \(N\) operaciones cumplió esa
-    condición.</p>
+    <p class="intuicion"><strong>En criollo:</strong> los retornos dentro de una misma
+    operación se multiplican entre sí (interés compuesto), no se suman. Si el resultado
+    compuesto de esa operación es positivo, cuenta como ganadora.</p>
   </div>
 
-  <h3>2.5. Diseño experimental</h3>
   <p>
-  En cada escenario, la serie de precios se dividió temporalmente en un 80% para entrenamiento y un 20% final
-  reservado exclusivamente para evaluación (<em>backtest</em>), sin exposición del agente a dichos datos durante
-  el entrenamiento. Se entrenó por 300 episodios, con sincronización de la red objetivo cada 10 episodios.
+  En cada escenario dividí la serie 80/20 (entrenamiento/test), sin que el agente viera los
+  datos de test durante el entrenamiento. 300 episodios, red objetivo sincronizada cada 10.
   </p>
 
-  <h2 id="resultados">3. Resultados</h2>
+  <h2>Qué pasó</h2>
 
-  <h3>3.1. Escenario I - Serie sintética</h3>
+  <h3>Primero, datos sintéticos</h3>
   <p>
-  Se generó una serie de 2000 observaciones mediante movimiento geométrico browniano segmentado en cuatro
-  regímenes de deriva y volatilidad distintos, con el fin de simular alternancia de tendencias alcistas, bajistas
-  y de baja direccionalidad.
+  Generé 2000 observaciones con movimiento geométrico browniano, en cuatro regímenes
+  distintos de deriva y volatilidad, para simular tramos alcistas, bajistas y planos.
   </p>
   <table>
-    <caption>Tabla 1. Métricas de backtest, escenario sintético (datos de test no vistos en entrenamiento).</caption>
+    <caption>Backtest, escenario sintético (datos de test, no vistos en entrenamiento).</caption>
     <tr><th>Métrica</th><th>Agente DQN</th><th>Buy &amp; Hold</th></tr>
     <tr><td>Retorno total</td><td class="win">20.94%</td><td>12.67%</td></tr>
     <tr><td>Ratio de Sharpe</td><td class="win">0.977</td><td>0.485</td></tr>
     <tr><td>Máx. drawdown</td><td class="win">&minus;12.87%</td><td>&minus;19.14%</td></tr>
     <tr><td>Win rate</td><td>53.95%</td><td>100%<span class="footnote">*</span></td></tr>
   </table>
-  <p class="footnote">* Con una única operación de duración completa, el win rate de buy &amp; hold no es directamente
-  comparable con el del agente, que ejecuta múltiples operaciones cortas.</p>
+  <p class="footnote">* Con una única operación de duración completa, el win rate de buy & hold
+  no es directamente comparable con el del agente, que hace múltiples operaciones cortas.</p>
 
   <figure>
     <img src="synthetic_backtest.png" alt="Curva de equity, escenario sintético">
-    <figcaption>Figura 1. Curvas de equity, agente DQN vs. buy &amp; hold, datos sintéticos de test. El agente
-    evita gran parte de la corrección observada entre los días 50&ndash;230 y participa de la recuperación
-    posterior, resultando en menor drawdown y mayor retorno ajustado por riesgo.</figcaption>
+    <figcaption>El agente esquiva gran parte de la corrección entre los días 50-230 y
+    participa de la recuperación después, terminando con menor drawdown y mejor retorno
+    ajustado por riesgo.</figcaption>
   </figure>
 
   <p>
-  En este escenario, el agente superó al benchmark en las cuatro dimensiones de retorno y riesgo evaluadas
-  (excepto win rate, de comparabilidad limitada). La curva de recompensa por episodio (no mostrada para este
-  escenario) presentó una tendencia de mejora débil y ruidosa, consistente con un entrenamiento parcialmente
-  convergido.
+  Acá el agente le ganó al benchmark en las cuatro métricas (menos win rate, que ya vimos que
+  no es comparable). Buena señal -pero era el escenario más fácil, diseñado a propósito con
+  tramos bajistas para que hubiera algo que esquivar.
   </p>
 
-  <h3>3.2. Escenario II - Serie real: MU (Micron Technology)</h3>
+  <h3>Después, datos reales: MU (Micron)</h3>
   <p>
-  Se utilizaron precios de cierre diarios reales descargados mediante la API de Yahoo Finance (biblioteca
-  <code>yfinance</code>), correspondientes al período 2022&ndash;2026.
+  Precios de cierre reales vía la API de Yahoo Finance (<code>yfinance</code>), 2022-2026.
   </p>
   <figure>
     <img src="mu_training.png" alt="Curva de entrenamiento, MU">
-    <figcaption>Figura 2. Recompensa acumulada por episodio durante el entrenamiento (MU). Se observa una
-    tendencia de mejora considerablemente más consistente que en el escenario sintético, con crecimiento
-    aproximadamente monótono de ~0.5 a ~2.3 a lo largo de 300 episodios.</figcaption>
+    <figcaption>Recompensa por episodio durante el entrenamiento. Mejora bastante más
+    consistente que en el sintético, creciendo de forma casi monótona de ~0.5 a ~2.3 en 300
+    episodios.</figcaption>
   </figure>
   <figure>
     <img src="mu_backtest.png" alt="Curva de equity, MU">
-    <figcaption>Figura 3. Curvas de equity en el período de test (MU). El período coincide con una tendencia
-    alcista pronunciada y sostenida.</figcaption>
+    <figcaption>El período de test coincide con una tendencia alcista fuerte y sostenida.</figcaption>
   </figure>
   <table>
-    <caption>Tabla 2. Métricas de backtest, escenario MU (datos de test no vistos en entrenamiento).</caption>
+    <caption>Backtest, escenario MU.</caption>
     <tr><th>Métrica</th><th>Agente DQN</th><th>Buy &amp; Hold</th></tr>
     <tr><td>Retorno total</td><td>165.67%</td><td class="win">512.30%</td></tr>
     <tr><td>Ratio de Sharpe</td><td>1.927</td><td class="win">2.774</td></tr>
@@ -621,28 +470,25 @@
     <tr><td>Win rate</td><td>57.89%</td><td>100%<span class="footnote">*</span></td></tr>
   </table>
   <p>
-  A diferencia del escenario sintético, en este caso <span class="lose">el agente obtuvo un desempeño
-  sustancialmente inferior</span> al benchmark en retorno total y Sharpe: la estrategia de buy &amp; hold
-  multiplicó el capital inicial por 6.12&times;, frente a 2.66&times; del agente. Es de notar que, pese a este
-  resultado, el agente sí logró un máximo drawdown menor (&minus;33.87% vs. &minus;39.10%), consistente con su
-  comportamiento de reducción de exposición -insuficiente, sin embargo, para compensar el costo de
-  oportunidad de las salidas en un mercado con esta magnitud de tendencia alcista.
+  Acá <span class="lose">el agente perdió, y no por poco</span>: buy & hold multiplicó el
+  capital por 6.12x, el agente por 2.66x. Sí logró un drawdown menor
+  (&minus;33.87% vs &minus;39.10%) -reduce exposición cuando conviene- pero eso no alcanzó
+  para compensar el costo de oportunidad de salirse en un mercado que solo subía.
   </p>
 
-  <h3>3.3. Escenario III - Serie real: AAPL (Apple Inc.)</h3>
+  <h3>Y con AAPL, se repite el patrón</h3>
   <figure>
     <img src="aapl_training.png" alt="Curva de entrenamiento, AAPL">
-    <figcaption>Figura 4. Recompensa por episodio durante el entrenamiento (AAPL). La señal de mejora es más
-    débil y ruidosa que en el escenario MU, oscilando sin una tendencia ascendente clara alrededor de un valor
-    medio de ~0.25.</figcaption>
+    <figcaption>Señal de mejora más débil y ruidosa que en MU, oscilando sin tendencia clara
+    alrededor de ~0.25.</figcaption>
   </figure>
   <figure>
     <img src="aapl_backtest.png" alt="Curva de equity, AAPL">
-    <figcaption>Figura 5. Curvas de equity en el período de test (AAPL). Nuevamente, el período de evaluación
-    coincide con una tendencia alcista, de menor magnitud que en el caso de MU.</figcaption>
+    <figcaption>De nuevo, el período de test coincide con una tendencia alcista, aunque menos
+    marcada que en MU.</figcaption>
   </figure>
   <table>
-    <caption>Tabla 3. Métricas de backtest, escenario AAPL (datos de test no vistos en entrenamiento).</caption>
+    <caption>Backtest, escenario AAPL.</caption>
     <tr><th>Métrica</th><th>Agente DQN</th><th>Buy &amp; Hold</th></tr>
     <tr><td>Retorno total</td><td>8.29%</td><td class="win">23.81%</td></tr>
     <tr><td>Ratio de Sharpe</td><td>0.538</td><td class="win">1.064</td></tr>
@@ -650,25 +496,23 @@
     <tr><td>Win rate</td><td>53.12%</td><td>100%<span class="footnote">*</span></td></tr>
   </table>
   <p>
-  El patrón se repite: el agente (equity final 1.083&times;) fue superado por buy &amp; hold (equity final
-  1.238&times;) tanto en retorno como en Sharpe, aunque con una brecha relativa menor que en el escenario MU,
-  proporcional a la menor intensidad de la tendencia alcista subyacente. Nuevamente, el drawdown del agente
-  resultó marginalmente inferior al del benchmark (&minus;13.15% vs. &minus;13.80%), un patrón consistente a
-  través de los tres escenarios: <em>el agente reduce el riesgo de cola, pero ese beneficio no alcanza a
-  compensar el costo de oportunidad en regímenes alcistas sostenidos</em>.
+  Mismo patrón: el agente (1.083x) queda por debajo de buy & hold (1.238x), aunque la brecha
+  es menor porque la tendencia alcista también lo es. Otra vez, el drawdown del agente es un
+  poco mejor. La lectura que empieza a formarse: <em>el agente reduce el riesgo de cola, pero
+  ese beneficio no compensa el costo de oportunidad en mercados alcistas sostenidos</em>.
   </p>
 
-  <h2 id="profundidad">4. Efecto de la profundidad de la red</h2>
+  <h2>¿Era el mercado, o era la red?</h2>
   <p>
-  Motivados por el desempeño inferior del agente frente al benchmark en ambos escenarios reales (secciones 3.2
-  y 3.3), se evaluó si dicho resultado se debía al régimen de mercado del período de prueba o a una capacidad de
-  representación insuficiente de la red superficial (\(L=2\), una capa oculta). Se repitió el entrenamiento y
-  backtest en ambos activos reales, sin ningún otro cambio metodológico, sustituyendo únicamente la arquitectura
-  por una red profunda de tres capas ocultas (\(L=4\)).
+  Con dos escenarios reales perdiendo contra el benchmark, quedaba la duda: ¿es que el
+  agente está estructuralmente en desventaja quedándose afuera del mercado en tendencias
+  alcistas, o simplemente la red de una capa no tiene capacidad suficiente para captar la
+  señal en datos reales? Repetí el mismo entrenamiento y backtest en MU y AAPL, sin tocar
+  nada más, cambiando solo la arquitectura a tres capas ocultas.
   </p>
 
   <table>
-    <caption>Tabla 4. Comparación de arquitecturas, escenario MU.</caption>
+    <caption>MU: una capa vs. tres capas.</caption>
     <tr><th>Métrica</th><th>Agente (1 capa)</th><th>Agente (3 capas)</th><th>Buy &amp; Hold</th></tr>
     <tr><td>Retorno total</td><td>165.67%</td><td class="win">358.47%</td><td>512.30%</td></tr>
     <tr><td>Ratio de Sharpe</td><td>1.927</td><td class="win">2.894</td><td>2.774</td></tr>
@@ -677,7 +521,7 @@
   </table>
 
   <table>
-    <caption>Tabla 5. Comparación de arquitecturas, escenario AAPL.</caption>
+    <caption>AAPL: una capa vs. tres capas.</caption>
     <tr><th>Métrica</th><th>Agente (1 capa)</th><th>Agente (3 capas)</th><th>Buy &amp; Hold</th></tr>
     <tr><td>Retorno total</td><td>8.29%</td><td class="win">24.15%</td><td>23.81%</td></tr>
     <tr><td>Ratio de Sharpe</td><td>0.538</td><td class="win">1.503</td><td>1.064</td></tr>
@@ -687,130 +531,78 @@
 
   <figure>
     <img src="aapl_training_3layer.png" alt="Entrenamiento AAPL, red de 3 capas">
-    <figcaption>Figura 6. Recompensa por episodio, AAPL, red de tres capas ocultas. La convergencia es
-    marcadamente más limpia y sostenida que la observada con la red superficial (Figura 4), sin el
-    estancamiento de aquella.</figcaption>
+    <figcaption>La convergencia es mucho más limpia y sostenida que con la red superficial,
+    sin el estancamiento de antes.</figcaption>
   </figure>
   <figure>
     <img src="aapl_backtest_3layer.png" alt="Backtest AAPL, red de 3 capas">
-    <figcaption>Figura 7. Curva de equity, AAPL, red de tres capas. El agente iguala aproximadamente al
-    benchmark hacia el final del período de test, a diferencia de la brecha sostenida observada con la
-    red superficial (Figura 5).</figcaption>
+    <figcaption>El agente ahora iguala casi al benchmark hacia el final del período de test.</figcaption>
   </figure>
   <figure>
     <img src="mu_training_3layer.png" alt="Entrenamiento MU, red de 3 capas">
-    <figcaption>Figura 8. Recompensa por episodio, MU, red de tres capas ocultas.</figcaption>
   </figure>
   <figure>
     <img src="mu_backtest_3layer.png" alt="Backtest MU, red de 3 capas">
-    <figcaption>Figura 9. Curva de equity, MU, red de tres capas. Pese a no alcanzar el retorno total del
-    benchmark, el agente reduce sustancialmente la brecha respecto de la red superficial (Figura 3) y logra
-    un ratio de Sharpe superior al de buy &amp; hold.</figcaption>
+    <figcaption>Sin llegar al retorno del benchmark, la brecha se reduce mucho respecto a la
+    red superficial, y el Sharpe termina por encima del de buy & hold.</figcaption>
   </figure>
 
   <p>
-  El efecto es consistente y sustancial en ambos activos: la red profunda mejoró las cuatro métricas evaluadas
-  respecto de la red superficial, sin excepción, en los dos escenarios reales. Particularmente notable es que,
-  en ambos casos, <strong>el ratio de Sharpe del agente con la red profunda superó al de buy &amp; hold</strong>
-  (2.894 vs. 2.774 en MU; 1.503 vs. 1.064 en AAPL) -algo que no se había observado en ningún escenario real
-  con la arquitectura superficial. Esto sugiere que la capacidad de representación insuficiente de la red de una
-  capa era, al menos parcialmente, la causa del desempeño inferior reportado en las secciones 3.2 y 3.3, más allá
-  del régimen de mercado del período evaluado.
+  Ahí estaba la respuesta, y era bastante clara: en los dos activos reales, la red profunda
+  mejoró las cuatro métricas sin excepción. Lo más interesante es que
+  <strong>el Sharpe del agente con la red profunda superó al de buy & hold en ambos casos</strong>
+  (2.894 vs. 2.774 en MU; 1.503 vs. 1.064 en AAPL) -algo que no había pasado ni una vez con la
+  red superficial. Buena parte de lo que parecía "el mercado le gana al agente" en realidad
+  era "la red no daba para más".
   </p>
   <p>
-  Cabe señalar que el retorno total del agente continúa por debajo del de buy &amp; hold en ambos escenarios
-  reales, incluso con la red profunda. La mejora se concentra en la relación riesgo-retorno (Sharpe) y en el
-  control de drawdown, no en el retorno absoluto capturado durante la tendencia alcista -una distinción
-  relevante para cualquier evaluación de la utilidad práctica del agente, dependiendo de si el criterio de
-  éxito prioriza retorno crudo o retorno ajustado por riesgo.
+  Ojo con lo que no cambió: el retorno total absoluto del agente sigue por debajo de buy &
+  hold en ambos activos, incluso con la red profunda. La mejora está en la relación
+  riesgo-retorno y en el control de drawdown, no en capturar más retorno crudo durante la
+  subida. Si lo que importa es el número final de la cuenta, buy & hold sigue ganando. Si lo
+  que importa es cuánto riesgo asumiste para llegar ahí, el agente profundo ya compite de
+  igual a igual.
   </p>
 
-  <h2 id="discusion">5. Discusión</h2>
+  <h2>Qué me llevo de esto</h2>
   <p>
-  Los tres escenarios evaluados sugieren un patrón consistente: <strong>el desempeño relativo del agente frente
-  al benchmark de buy &amp; hold está fuertemente condicionado por el régimen del período de prueba</strong>. En
-  el escenario sintético -construido explícitamente con alternancia de regímenes, incluyendo tramos
-  bajistas y de baja direccionalidad- el agente pudo capturar valor evitando parte de una corrección. En
-  ambos escenarios con datos reales, el período de test coincidió con tendencias alcistas sostenidas, condición
-  en la cual una estrategia que introduce salidas de mercado (aun cuando reduzcan el riesgo marginal) tiende
-  estructuralmente a rendir por debajo de una estrategia de exposición constante.
+  Lo primero: el desempeño del agente frente a quedarse simplemente comprado depende mucho
+  del régimen del período que le toque. En el sintético, con tramos bajistas de verdad, pudo
+  sacarle jugo a evitarlos. En los dos reales, el test coincidió con mercados alcistas
+  sostenidos -ahí, cualquier estrategia que se salga del mercado empieza en desventaja
+  estructural.
   </p>
   <p>
-  Este hallazgo, sin embargo, se matiza a la luz de los resultados de la Sección 4: al aumentar la profundidad
-  de la red de una a tres capas ocultas, el ratio de Sharpe del agente superó al del benchmark en ambos activos
-  reales, revirtiendo parcialmente esta lectura inicial. El desempeño inferior observado con la red superficial
-  no era, entonces, exclusivamente atribuible al régimen de mercado, sino también, y quizás principalmente, a
-  una capacidad de representación insuficiente para capturar la señal necesaria en los datos reales. El retorno
-  total absoluto, no obstante, permaneció por debajo del benchmark en ambos casos incluso con la red profunda
-  -sugiriendo que el régimen de mercado sí impone un límite estructural sobre cuánto retorno absoluto
-  puede capturar una estrategia de rotación, aun cuando su perfil de riesgo-retorno mejore sustancialmente.
+  Pero esa lectura se matiza fuerte con lo de la profundidad de red: gran parte de lo que en
+  un primer momento parecía "el agente no puede competir en mercados reales" era, más bien,
+  "la red de una capa no alcanzaba a representar la política necesaria". No es lo mismo un
+  problema del entorno que un problema de capacidad del modelo, y vale la pena descartar lo
+  segundo antes de sacar conclusiones sobre lo primero.
   </p>
   <p>
-  Esta observación no debe interpretarse como una falla del agente per se, sino como una propiedad esperable de
-  cualquier estrategia de rotación en mercados alcistas de baja volatilidad relativa: el costo de oportunidad de
-  las salidas puede superar el valor de la protección que ofrecen, incluso cuando el agente identifica
-  correctamente los momentos de mayor riesgo relativo. Es una observación consistente con la literatura de
-  gestión de riesgo, donde estrategias de reducción de exposición (<em>de-risking</em>) compiten en dos
-  dimensiones distintas -retorno absoluto y retorno ajustado por riesgo- que no siempre favorecen a
-  la misma estrategia.
+  Algo que también noté: la curva de entrenamiento de MU con la red chica convergía mucho
+  más limpio que la de AAPL, y aun así el agente terminó perdiendo contra el benchmark en
+  los dos casos con esa arquitectura. Una curva de entrenamiento sana no garantiza que la
+  política aprendida le gane a lo que estás comparando -son dos cosas distintas.
   </p>
   <p>
-  Es notable, adicionalmente, que la curva de aprendizaje del escenario MU con la red superficial (Figura 2)
-  mostró una convergencia considerablemente más limpia que la del escenario AAPL (Figura 4), pese a que el
-  agente terminó rindiendo por debajo del benchmark en ambos con esa arquitectura. Esto ilustra una distinción
-  metodológica importante: <em>una curva de entrenamiento saludable no garantiza que la política aprendida
-  supere al benchmark elegido</em>; la capacidad del modelo para representar la política óptima es una condición
-  necesaria adicional, independiente de la calidad de la convergencia del entrenamiento.
+  Y las limitaciones, dichas sin vueltas: entrené con 300 episodios, que es poco para DQN;
+  usé una sola partición train/test por escenario, sin validación walk-forward, así que no
+  puedo separar bien habilidad real de suerte de régimen; el espacio de acciones es binario
+  (comprado/afuera), sin posiciones cortas; y cada configuración corrió con una sola semilla,
+  así que parte de la mejora al profundizar la red podría deberse a la inicialización y no
+  solo a la capacidad del modelo. Con dos activos reales y una serie sintética, tampoco hay
+  base para generalizar mucho más allá de lo que vi acá.
   </p>
-
-  <h2 id="limitaciones">6. Limitaciones</h2>
-  <ol>
-    <li><strong>Número reducido de episodios de entrenamiento.</strong> 300 episodios es un valor bajo para la
-    convergencia típica de DQN; los resultados podrían diferir sustancialmente con un régimen de entrenamiento
-    más extenso.</li>
-    <li><strong>Ausencia de validación walk-forward.</strong> Se empleó una única partición temporal
-    train/test por escenario. Un solo período de prueba no permite distinguir habilidad genuina de la
-    estrategia de la varianza propia de un único régimen de mercado. Una validación por ventanas móviles
-    (walk-forward) sería necesaria para conclusiones robustas.</li>
-    <li><strong>Espacio de acciones simplificado.</strong> La restricción a dos posiciones (plano/largo) impide
-    al agente beneficiarse de posiciones cortas en tendencias bajistas, lo cual podría explicar parcialmente
-    su desempeño relativo en distintos regímenes.</li>
-    <li><strong>Comparación de arquitecturas con una sola corrida por configuración.</strong> Al igual que en
-    los escenarios base, la comparación de la Sección 4 se realizó con una única semilla aleatoria por
-    arquitectura y activo. No es posible descartar que parte de la mejora observada al profundizar la red se
-    deba a varianza de inicialización antes que a la capacidad de representación en sí.</li>
-    <li><strong>Tamaño muestral de activos.</strong> Se evaluaron únicamente dos activos reales (MU, AAPL) y
-    una serie sintética; no es posible generalizar estadísticamente a partir de tres observaciones.</li>
-  </ol>
-
-  <h2 id="conclusion">7. Conclusión</h2>
   <p>
-  Se implementó y evaluó un agente DQN de trading, íntegramente en NumPy, con arquitectura de profundidad
-  configurable, junto con un marco de backtesting cuantitativo estándar. Los resultados empíricos revelan dos
-  hallazgos entrelazados. Primero, el desempeño relativo del agente frente a la estrategia pasiva depende del
-  régimen de mercado evaluado: en mercados alcistas sostenidos, el retorno absoluto de una estrategia de rotación
-  tiende a quedar por debajo de la exposición constante. Segundo, y de forma más novedosa, gran parte de la
-  brecha observada inicialmente en los escenarios reales resultó atribuible a una capacidad de representación
-  insuficiente de la red superficial: al profundizar la arquitectura de una a tres capas ocultas, el agente
-  alcanzó un ratio de Sharpe superior al de buy &amp; hold en ambos activos reales evaluados, revirtiendo la
-  conclusión inicial sobre su competitividad. Consideramos que esta progresión -de un resultado
-  aparentemente negativo a uno matizado y parcialmente positivo, mediante una mejora de arquitectura simple y
-  bien fundamentada- constituye en sí misma una lección metodológica relevante: antes de atribuir el
-  desempeño de un agente de RL al régimen del entorno, conviene descartar primero limitaciones de capacidad del
-  modelo. Aun así, la ausencia de validación walk-forward y multi-régimen impide afirmar con certeza que estos
-  resultados generalicen más allá de las muestras evaluadas, y el buy &amp; hold sigue constituyendo, en términos
-  de retorno absoluto, un benchmark difícil de superar en mercados con tendencia alcista sostenida.
+  Con todo eso sobre la mesa, me quedo con esto: pasar de "el agente pierde" a "el agente
+  compite en riesgo-retorno, con una arquitectura mejor" fue la parte más útil de todo el
+  ejercicio -y es una buena costumbre en general, antes de culpar al mercado, primero
+  descartar que el modelo dé para más.
   </p>
-
-  <h2>Referencias</h2>
-  <div class="references">
-    <p>[1] Sutton, R. S., &amp; Barto, A. G. (2018). <em>Reinforcement Learning: An Introduction</em> (2nd ed.). MIT Press.</p>
-    <p>[2] Mnih, V., et al. (2015). Human-level control through deep reinforcement learning. <em>Nature</em>, 518(7540), 529&ndash;533.</p>
-    <p>[3] Kingma, D. P., &amp; Ba, J. (2015). Adam: A Method for Stochastic Optimization. <em>ICLR</em>.</p>
-  </div>
 
   <footer class="doc-footer">
-    Todo resultado numérico en este documento proviene de código ejecutado y registrado durante el desarrollo del proyecto.
+    Todo resultado numérico en esta página viene de código que corrí y registré durante el desarrollo del proyecto.
   </footer>
 
 </div>
