@@ -190,8 +190,12 @@ body {
   margin: 1.5rem 0;
   display: block;
 }
- .project-preview-dqn {
-  max-height: 360px;
+.project-preview-dqn {
+  width: 100%;
+  max-width: 480px;
+    border-radius: 12px;
+  height: 430px;
   object-fit: cover;
-  object-position: center 70%;
+  object-position: center calc(40% - 1.5px);
 }
+
