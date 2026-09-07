@@ -10,10 +10,10 @@
 
   <meta
     name="description"
-    content="Interactive 3D exploration of the Möbius strip's geometry."
+    content="An interactive 3D exploration of the Möbius strip's geometry."
   >
 
-  <title>MÖBIUS — Interactive Geometry</title>
+  <title>MÖBIUS - Interactive Geometry</title>
 
   <script type="importmap">
   {
@@ -95,7 +95,6 @@
       outline-offset: 3px;
       border-radius: 4px;
     }
-
 
     .hero {
       min-height: 100svh;
@@ -194,10 +193,7 @@
       font-size: 10px;
     }
 
-     
-      /*  MAIN */
-     
-
+ 
     #mobius-section {
       position: relative;
 
@@ -211,9 +207,7 @@
       border-bottom: 1px solid var(--line);
     }
 
-    /* CANVAS */
-      
-
+   
     #canvas-container {
       position: relative;
 
@@ -301,10 +295,6 @@
       pointer-events: none;
       z-index: 5;
     }
-
-    /*  
-       INFO
-      */
 
     .info {
       position: relative;
@@ -439,10 +429,7 @@
       border-color: var(--line);
     }
 
-    /*  
-       MATH
-      */
-
+    
     .math-panel {
       margin-top: 14px;
 
@@ -621,10 +608,6 @@
       color: var(--white);
     }
 
-    /*  
-       SLIDER
-      */
-
     .math-controls {
       padding: 18px 0 24px;
 
@@ -751,8 +734,6 @@
       font-weight: 700;
     }
 
-  
-
     .variables {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -802,9 +783,6 @@
       font-weight: 500;
     }
 
-    /*  
-       COORDINATES
-      */
 
     .coordinates {
       display: grid;
@@ -815,9 +793,7 @@
       margin-top: 8px;
     }
 
-    /*  
-       NOTE
-      */
+   
 
     .math-note {
       display: flex;
@@ -850,9 +826,6 @@
         0 0 10px rgba(255, 59, 48, 0.5);
     }
 
-    /*  
-       ACTIONS
-      */
 
     .actions {
       display: grid;
@@ -1104,8 +1077,6 @@
       line-height: 1.6;
     }
 
-  
-
     footer {
       min-height: 140px;
 
@@ -1128,9 +1099,6 @@
       color: var(--white);
     }
 
-    /*  
-       RESPONSIVE
-      */
 
     @media (max-width: 980px) {
       .hero {
@@ -1174,7 +1142,7 @@
         padding:
           30px 20px 42px;
       }
-     
+
       .title h1 {
         font-size: 28vw;
       }
@@ -1257,13 +1225,14 @@
 
   <main id="app">
 
+    
 
     <section class="hero">
 
       <div class="title">
 
         <span class="eyebrow">
-          INTERACTIVE GEOMETRY
+          INTERACTIVE GEOMETRY / 01
         </span>
 
         <h1>MÖBIUS</h1>
@@ -1289,7 +1258,7 @@
     </section>
 
 
-    
+
     <section id="mobius-section">
 
       <div id="canvas-container">
@@ -1309,7 +1278,7 @@
       <aside class="info">
 
         <span class="number">
-          01 — THE OBJECT
+          01 - THE OBJECT
         </span>
 
         <h2>
@@ -1317,14 +1286,12 @@
         </h2>
 
         <p class="intro">
-          A band with a 180° half-twist connecting
-          its two seemingly opposite faces.
-          Explore its geometry and discover what
-          happens when it is cut.
+          A band with a single 180° twist, joining what
+          look like two separate faces into one. See
+          what happens when you cut it.
         </p>
 
 
-        <!-- CUT OPTIONS -->
 
         <div class="cut-options">
 
@@ -1391,17 +1358,17 @@
 
                   <div class="legend-row">
                     <span class="var-name">R</span>
-                    <span><strong>Central radius</strong> — distance from the center of the ring to the strip's core curve (here, 2.2).</span>
+                    <span><strong>Central radius</strong> - distance from the center of the ring to the strip's core curve (here, 2.2).</span>
                   </div>
 
                   <div class="legend-row">
                     <span class="var-name">u</span>
-                    <span><strong>Angle around the ring</strong> — runs from 0 to 360° (2π rad) once per full revolution.</span>
+                    <span><strong>Angle around the ring</strong> - runs from 0 to 360° (2π rad) once per full revolution.</span>
                   </div>
 
                   <div class="legend-row">
                     <span class="var-name">v</span>
-                    <span><strong>Position across the width</strong> — ranges from −0.7 to 0.7; 0 is the centerline.</span>
+                    <span><strong>Position across the width</strong> - ranges from −0.7 to 0.7; 0 is the centerline.</span>
                   </div>
 
                 </div>
@@ -1409,7 +1376,7 @@
               </div>
 
               <p class="math-description">
-                The term <span class="var-name">u</span>⁄2 is the key: while <span class="var-name">u</span> completes a full revolution (360°), this term advances only <strong>half a turn</strong> (180°). That is why, upon returning to the starting point, the edge that was "on top" ends up "on the bottom" — the strip has a single side and a single edge.
+                <span class="var-name">u</span>⁄2 is why the twist happens: <span class="var-name">u</span> goes all the way around (360°), but <span class="var-name">u</span>⁄2 only gets halfway (180°). So by the time you're back where you started, "top" and "bottom" have swapped - one side, one edge.
               </p>
 
 
@@ -1536,7 +1503,7 @@
                 <span class="dot"></span>
 
                 <span>
-                  The red point travels along the centerline (v = 0). Move the slider to trace it; v stays fixed because only that line is used as a visual guide.
+                  The red point moves along the centerline (v = 0). Drag the slider to trace it - v stays at 0 because that's the line we're following.
                 </span>
 
               </div>
@@ -1575,9 +1542,7 @@
     </section>
 
 
-    <!-- 
-         RESULT-->
-
+ 
     <section id="result">
 
       <div
@@ -1589,7 +1554,7 @@
       <div class="result-card">
 
         <span class="number">
-          02 — RESULT
+          02 - RESULT
         </span>
 
         <h2 id="result-title">
@@ -1597,8 +1562,8 @@
         </h2>
 
         <p id="result-description" aria-live="polite">
-          Make a cut to discover how
-          the Möbius strip transforms.
+          Make a cut and watch how
+          the strip changes.
         </p>
 
         <span
@@ -1650,22 +1615,21 @@
     </section>
 
 
-
-
+   
     <footer>
 
       <span>
-        INTERACTIVE GEOMETRY
+        INT. G
       </span>
 
-      
+     
 
     </footer>
 
   </main>
 
 
-   
+ 
 
   <script type="module" src="./script.js"></script>
 
