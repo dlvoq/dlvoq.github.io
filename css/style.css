@@ -182,3 +182,12 @@ body {
   color: #000;        
   text-decoration: none; 
 }
+
+.project-preview {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  display: block;
+}
+ 
