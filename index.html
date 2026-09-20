@@ -1,615 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Deep Q-Learning agent for trading</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<style>
-  :root {
-    --bg: #14150f;
-    --panel: #1b1c15;
-    --panel-2: #21221a;
-    --text: #eef0e6;
-    --muted: #9a9d8c;
-    --clay: #e07a4a;
-    --slate: #6fb0c2;
-    --moss: #6b8a54;
-    --gold: #e8b23d;
-    --win: #7ed957;
-    --lose: #e0574a;
-    --line: #34362a;
-  }
-
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Public Sans', sans-serif;
-    font-size: 16px;
-    line-height: 1.65;
-  }
-
-  .page {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 64px 28px 100px;
-  }
-
-  /* ---------- Header ---------- */
-  .masthead { margin-bottom: 40px; }
-
-  .kicker {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--gold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
-  .masthead h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 34px;
-    line-height: 1.2;
-    max-width: 18ch;
-    margin: 0 0 16px;
-  }
-
-  .lede {
-    font-size: 17px;
-    color: #c9cbb9;
-    max-width: 56ch;
-  }
-
-  .meta-line {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    color: var(--muted);
-    margin-top: 20px;
-  }
-
-  h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 24px;
-    margin-top: 52px;
-    margin-bottom: 6px;
-  }
-
-  h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 19px;
-    margin-top: 30px;
-    color: var(--text);
-  }
-
-  p { text-align: justify; margin: 16px 0; color: #dcded1; }
-
-  /* ---------- Equations ---------- */
-  .eq-wrap { margin: 24px 0 28px; }
-  .eq-block {
-    margin: 0;
-    padding: 16px 20px;
-    background: var(--panel);
-    border-left: 3px solid var(--slate);
-    overflow-x: auto;
-    position: relative;
-  }
-  .eq-num {
-    float: right;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .eq-legend {
-    margin: 8px 0 0;
-    padding: 10px 20px 4px;
-    border-left: 2px solid var(--line);
-    font-size: 14px;
-    color: #c9cbb9;
-  }
-  .eq-legend dt {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    color: var(--text);
-    min-width: 2.2rem;
-  }
-  .eq-legend dd {
-    display: inline;
-    margin: 0 0 0 6px;
-    color: var(--muted);
-  }
-  .eq-legend .term { display: block; margin-bottom: 5px; }
-
-  .intuicion {
-    font-size: 14px;
-    background: var(--panel-2);
-    border-left: 3px solid var(--gold);
-    padding: 10px 16px;
-    margin: 10px 0 0;
-    color: #d8d5c4;
-  }
-  .intuicion strong {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--gold);
-  }
-
-  code, .mono {
-    font-family: 'JetBrains Mono', monospace;
-    background: var(--panel-2);
-    padding: 2px 6px;
-    font-size: 0.86em;
-    color: #d4d6c8;
-  }
-
-  /* ---------- Tables ---------- */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 14px;
-  }
-  caption {
-    caption-side: top;
-    font-size: 13px;
-    font-style: italic;
-    color: var(--muted);
-    text-align: left;
-    margin-bottom: 8px;
-  }
-  th, td {
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 10px 12px;
-    text-align: right;
-  }
-  th:first-child, td:first-child { text-align: left; }
-  th {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    border-bottom: 2px solid var(--line);
-  }
-  .win { color: var(--win); font-weight: 700; }
-  .lose { color: var(--lose); font-weight: 700; }
-
-  /* ---------- Figures ---------- */
-  figure { margin: 32px 0; text-align: center; }
-  figure img {
-    max-width: 100%;
-    background: #fff;
-    padding: 8px;
-    border: 1px solid var(--line);
-  }
-  figcaption {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    line-height: 1.6;
-    color: var(--muted);
-    margin-top: 10px;
-    text-align: left;
-    padding: 0 4px;
-  }
-
-  .footnote { font-size: 12.5px; color: var(--muted); }
-
-  ol, ul { text-align: justify; }
-  ol li, ul li { margin-bottom: 10px; }
-
-  footer.doc-footer {
-    margin-top: 56px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-  }
-</style>
+<meta charset="UTF-8" />
+<title>Diego QV</title>
+<link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div class="page">
 
-  <div class="masthead">
-    <div class="kicker">Personal project &middot; work in progress</div>
-    <h1>A Deep Q-Learning agent for trading</h1>
-    <p class="lede">
-    I taught a neural network, built from scratch in NumPy, to decide when to be
-    long and when to stay out of the market. Here's how I built it, what metrics
-    I used to judge it, and what happened when I tested it against simply buying
-    and holding.
-    </p>
-    <p class="meta-line">D. Quispe &middot; September 2026</p>
-  </div>
+<header class="site-header">
+<div class="header-inner">
+<div class="site-name">Diego Quispe</div>
+<nav class="site-nav">
+<a href="index.html" class="active">Home</a>
+<a href="projects.html">Projects</a>
+<a href="https://drive.google.com/file/d/1kt9FIdxPmhZlppVZZVN7oodP9tmrY-uF/view" target="_blank" rel="noopener noreferrer">CV</a>
 
-  <p>
-  The idea is simple to state and much less simple to pull off: on every trading day,
-  the agent chooses between two positions -long or flat- trying to beat the most
-  boring, hardest-to-beat strategy there is: staying long the whole time
-  (<em>buy & hold</em>). This wasn't an exercise in "I built a model and it made money"
-  -in fact, in two of the three cases I tested, it lost to the benchmark- but rather
-  in honestly documenting what worked, what didn't, and why.
-  </p>
-
-  <h2>The environment: what the agent sees, and how it gets paid</h2>
-  <p>
-  It all starts with a series of closing prices \(P = (p_0, p_1, \dots, p_T)\). From
-  that, the daily return:
-  </p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(1)</span>
-    \[ r_t = \frac{p_{t+1} - p_t}{p_t} \]
-    </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(r_t\)</dt><dd>percentage return from day \(t\) to \(t+1\).</dd></span>
-      <span class="term"><dt>\(p_t\)</dt><dd>closing price on day \(t\).</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Plainly:</strong> "what percentage did the price go up or down
-    from one day to the next?" - the change \((p_{t+1}-p_t)\) expressed as a fraction of the
-    starting price, so the number is comparable across assets of different value.</p>
-  </div>
-
-  <p>
-  The agent can only take two actions, \(a_t \in \{0, 1\}\): \(0\) is flat, \(1\) is
-  long. What it "sees" at each moment isn't the full price history, but a window of
-  the last \(w\) returns plus its current position:
-  </p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(2)</span>
-    \[ s_t = \big(\, r_{t-w}, \, r_{t-w+1}, \, \dots, \, r_{t-1}, \, a_{t-1} \,\big) \in \mathbb{R}^{w+1} \]
-    </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(s_t\)</dt><dd>the only thing the agent "sees" to decide at instant \(t\).</dd></span>
-      <span class="term"><dt>\(w\)</dt><dd>window size (\(w=10\) in my tests).</dd></span>
-      <span class="term"><dt>\(a_{t-1}\)</dt><dd>whether it was already long or not, one step before.</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Plainly:</strong> a small "window" of the last \(w\) days,
-    plus one piece of memory (was it already in?). \(\mathbb{R}^{w+1}\) is just notation for
-    "a vector of \(w+1\) real numbers."</p>
-  </div>
-
-  <p>
-  And the reward: if it's long, it pockets the day's return; if it switches position,
-  it pays a transaction cost.
-  </p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(3)</span>
-    \[ R_t = a_t \cdot r_t \; - \; c \cdot \mathbb{1}[a_t \neq a_{t-1}] \]
-    </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(R_t\)</dt><dd>reward at step \(t\).</dd></span>
-      <span class="term"><dt>\(c\)</dt><dd>cost of switching position (\(c=0.0005\), 5 basis points).</dd></span>
-      <span class="term"><dt>\(\mathbb{1}[\cdot]\)</dt><dd>1 if the condition is true, 0 otherwise.</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Plainly:</strong> if it's long (\(a_t=1\)) it keeps
-    \(r_t\); if it's flat, that term is zero. The second term only kicks in on the day it
-    <em>switches</em> position relative to the day before -the cost of entering or exiting.</p>
-  </div>
-  <p>
-  Across every test I used \(w = 10\) and \(c = 0.0005\).
-  </p>
-
-  <h2>The network, and how it trains</h2>
-  <p>
-  No PyTorch or TensorFlow here -the network that approximates \(Q(s,a)\) I wrote by
-  hand, a multilayer perceptron with forward and backward propagation implemented from
-  scratch. Given a list of layer sizes \((n_0, \dots, n_L)\), every layer does the same
-  thing:
-  </p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(4)</span>
-    \[ z^{(i)} = a^{(i-1)} W_i + b_i, \qquad
-       a^{(i)} = \begin{cases} \tanh(z^{(i)}) & i < L \\ z^{(i)} & i = L \end{cases} \]
-    </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(z^{(i)}\)</dt><dd>linear output of layer \(i\), before activation.</dd></span>
-      <span class="term"><dt>\(a^{(i)}\)</dt><dd>output after activation; feeds into layer \(i+1\).</dd></span>
-      <span class="term"><dt>\(W_i, b_i\)</dt><dd>the parameters that get adjusted during training.</dd></span>
-      <span class="term"><dt>\(L\)</dt><dd>total number of layers (\(L=2\): one hidden; \(L=4\): three hidden).</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Plainly:</strong> multiply by weights, add a bias, bend it
-    with \(\tanh\), and pass the result to the next layer. The last layer is left unbent
-    because Q-values can be any real number, not just \((-1,1)\).</p>
-  </div>
-  <p>
-  I tried two depths: one hidden layer of 64 units, and three hidden layers of 64 each.
-  For training I used standard DQN -a target network synced every 10 episodes (no
-  averaging, a direct weight copy), and a replay buffer from which minibatches are
-  sampled so training isn't done on correlated transitions. The training target for a
-  transition \((s, a, r, s')\):
-  </p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(5)</span>
-    \[ y = r + \gamma \max_{a'} Q_{\theta^-}(s', a') \]
-    </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(y\)</dt><dd>what the network "should" have predicted.</dd></span>
-      <span class="term"><dt>\(\gamma\)</dt><dd>discount factor (\(\gamma=0.99\)): how much the future is worth.</dd></span>
-      <span class="term"><dt>\(Q_{\theta^-}\)</dt><dd>the target network, a frozen copy of the main one.</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Plainly:</strong> the real reward plus an estimate of how
-    much the best possible future is worth. The frozen network (not the one being
-    updated) is used to estimate that future, because otherwise the target keeps moving
-    and never converges.</p>
-  </div>
-  <p>
-  Weights are updated by minimizing \(\mathcal{L} = (Q_\theta(s,a) - y)^2\) with manual
-  backpropagation, layer by layer, using Adam as the optimizer.
-  </p>
-
-  <h3>Exploration</h3>
-  <p>
-  An \(\varepsilon\)-greedy policy with exponential decay:
-  </p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(6)</span>
-    \[ \varepsilon(e) = \max\big(\varepsilon_{\min},\; \varepsilon_0 \cdot \rho^{\,e}\big) \]
-    </div>
-    <dl class="eq-legend">
-      <span class="term"><dt>\(\varepsilon(e)\)</dt><dd>probability of acting randomly in episode \(e\).</dd></span>
-      <span class="term"><dt>\(\varepsilon_0, \varepsilon_{\min}\)</dt><dd>initial value (1.0) and floor (0.05).</dd></span>
-      <span class="term"><dt>\(\rho\)</dt><dd>decay rate (\(\rho=0.995\)).</dd></span>
-    </dl>
-    <p class="intuicion"><strong>Plainly:</strong> at first it always explores (100%
-    random). As episodes go by, it trusts what it's learned more and more. The floor
-    keeps it from ever stopping exploring entirely and getting stuck in a bad policy.</p>
-  </div>
-
-  <h2>How I judge it</h2>
-  <p>
-  Four standard metrics, computed on the equity curve \(E = (E_0, \dots, E_n)\) with
-  \(E_0 = 1\):
-  </p>
-
-  <p><strong>Total return</strong> -gain or loss from start to finish:</p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(7)</span>
-    \[ \text{RT} = \frac{E_n - E_0}{E_0} \]
-    </div>
-  </div>
-
-  <p><strong>Sharpe ratio</strong> (annualized) -return per unit of risk taken:</p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(8)</span>
-    \[ \text{Sharpe} = \frac{\bar{r}}{\sigma_r} \sqrt{252} \]
-    </div>
-    <p class="intuicion"><strong>Plainly:</strong> two strategies can have the same
-    average return, but if one gets there with much sharper swings, it's "worse" in
-    risk terms. Sharpe divides by that volatility; \(\sqrt{252}\) just rescales it to
-    an annual basis.</p>
-  </div>
-
-  <p><strong>Max drawdown</strong> -the worst drop from a historical peak:</p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(9)</span>
-    \[ \text{MDD} = \min_t \left( \frac{E_t - \max_{i \le t} E_i}{\max_{i \le t} E_i} \right) \]
-    </div>
-    <p class="intuicion"><strong>Plainly:</strong> day by day, "how much have I lost since
-    my best moment so far?" Max drawdown is the worst of those drops across the whole
-    period -the most painful stretch, even if it recovers afterward.</p>
-  </div>
-
-  <p><strong>Win rate</strong> -share of winning trades:</p>
-  <div class="eq-wrap">
-    <div class="eq-block"><span class="eq-num">(10)</span>
-    \[ \text{WR} = \frac{1}{N}\sum_{k=1}^{N} \mathbb{1}\!\left[\prod_{t \in \text{trade}_k}(1+r_t) - 1 > 0\right] \]
-    </div>
-    <p class="intuicion"><strong>Plainly:</strong> the daily returns within a single trade
-    multiply together (compounding), they don't add up. If that trade's compounded
-    result is positive, it counts as a win.</p>
-  </div>
-
-  <p>
-  For every scenario I split the series 80/20 (train/test), with the agent never seeing
-  the test data during training. 300 episodes, target network synced every 10.
-  </p>
-
-  <h2>What happened</h2>
-
-  <h3>First, synthetic data</h3>
-  <p>
-  I generated 2000 observations with geometric Brownian motion across four different
-  drift/volatility regimes, to simulate stretches of uptrend, downtrend, and flat
-  markets.
-  </p>
-  <table>
-    <caption>Backtest, synthetic scenario (test data, unseen during training).</caption>
-    <tr><th>Metric</th><th>DQN Agent</th><th>Buy &amp; Hold</th></tr>
-    <tr><td>Total return</td><td class="win">20.94%</td><td>12.67%</td></tr>
-    <tr><td>Sharpe ratio</td><td class="win">0.977</td><td>0.485</td></tr>
-    <tr><td>Max drawdown</td><td class="win">&minus;12.87%</td><td>&minus;19.14%</td></tr>
-    <tr><td>Win rate</td><td>53.95%</td><td>100%<span class="footnote">*</span></td></tr>
-  </table>
-  <p class="footnote">* With a single trade lasting the whole period, buy & hold's win
-  rate isn't directly comparable to the agent's, which makes multiple short trades.</p>
-
-  <figure>
-    <img src="synthetic_backtest.png" alt="Equity curve, synthetic scenario">
-    <figcaption>The agent dodges most of the drawdown between days 50-230 and
-    participates in the recovery afterward, ending with lower drawdown and better
-    risk-adjusted return.</figcaption>
-  </figure>
-
-  <p>
-  Here the agent beat the benchmark on all four metrics (except win rate, which we
-  already saw isn't comparable). Good sign -but this was the easiest scenario, built on
-  purpose with downtrends so there'd be something to dodge.
-  </p>
-
-  <h3>Then, real data: MU (Micron)</h3>
-  <p>
-  Real closing prices via the Yahoo Finance API (<code>yfinance</code>), 2022-2026.
-  </p>
-  <figure>
-    <img src="mu_training.png" alt="Training curve, MU">
-    <figcaption>Reward per episode during training. Considerably more consistent
-    improvement than the synthetic case, growing nearly monotonically from ~0.5 to ~2.3
-    over 300 episodes.</figcaption>
-  </figure>
-  <figure>
-    <img src="mu_backtest.png" alt="Equity curve, MU">
-    <figcaption>The test period coincides with a strong, sustained uptrend.</figcaption>
-  </figure>
-  <table>
-    <caption>Backtest, MU scenario.</caption>
-    <tr><th>Metric</th><th>DQN Agent</th><th>Buy &amp; Hold</th></tr>
-    <tr><td>Total return</td><td>165.67%</td><td class="win">512.30%</td></tr>
-    <tr><td>Sharpe ratio</td><td>1.927</td><td class="win">2.774</td></tr>
-    <tr><td>Max drawdown</td><td class="win">&minus;33.87%</td><td>&minus;39.10%</td></tr>
-    <tr><td>Win rate</td><td>57.89%</td><td>100%<span class="footnote">*</span></td></tr>
-  </table>
-  <p>
-  Here <span class="lose">the agent lost, and not by a little</span>: buy & hold turned
-  the starting capital into 6.12x, the agent into 2.66x. It did achieve a smaller
-  drawdown (&minus;33.87% vs &minus;39.10%) -it reduces exposure when it's worth it- but
-  that wasn't enough to make up for the opportunity cost of stepping out of a market
-  that only kept climbing.
-  </p>
-
-  <h3>And with AAPL, the pattern repeats</h3>
-  <figure>
-    <img src="aapl_training.png" alt="Training curve, AAPL">
-    <figcaption>A weaker, noisier improvement signal than MU, oscillating without a
-    clear trend around ~0.25.</figcaption>
-  </figure>
-  <figure>
-    <img src="aapl_backtest.png" alt="Equity curve, AAPL">
-    <figcaption>Again, the test period coincides with an uptrend, though a milder one
-    than MU's.</figcaption>
-  </figure>
-  <table>
-    <caption>Backtest, AAPL scenario.</caption>
-    <tr><th>Metric</th><th>DQN Agent</th><th>Buy &amp; Hold</th></tr>
-    <tr><td>Total return</td><td>8.29%</td><td class="win">23.81%</td></tr>
-    <tr><td>Sharpe ratio</td><td>0.538</td><td class="win">1.064</td></tr>
-    <tr><td>Max drawdown</td><td class="win">&minus;13.15%</td><td>&minus;13.80%</td></tr>
-    <tr><td>Win rate</td><td>53.12%</td><td>100%<span class="footnote">*</span></td></tr>
-  </table>
-  <p>
-  Same pattern: the agent (1.083x) ends up below buy & hold (1.238x), though the gap is
-  smaller because the uptrend is milder too. Again, the agent's drawdown is a bit
-  better. The reading starting to take shape: <em>the agent reduces tail risk, but that
-  benefit doesn't make up for the opportunity cost in sustained bull markets</em>.
-  </p>
-
-  <h2>Was it the market, or was it the network?</h2>
-  <p>
-  With two real scenarios losing to the benchmark, the question remained: is the agent
-  structurally at a disadvantage by stepping out of the market during uptrends, or does
-  the single-layer network simply not have enough capacity to pick up the signal in
-  real data? I repeated the same training and backtest on MU and AAPL, changing nothing
-  else, only swapping the architecture for three hidden layers.
-  </p>
-
-  <table>
-    <caption>MU: one layer vs. three layers.</caption>
-    <tr><th>Metric</th><th>Agent (1 layer)</th><th>Agent (3 layers)</th><th>Buy &amp; Hold</th></tr>
-    <tr><td>Total return</td><td>165.67%</td><td class="win">358.47%</td><td>512.30%</td></tr>
-    <tr><td>Sharpe ratio</td><td>1.927</td><td class="win">2.894</td><td>2.774</td></tr>
-    <tr><td>Max drawdown</td><td>&minus;33.87%</td><td class="win">&minus;22.89%</td><td>&minus;39.10%</td></tr>
-    <tr><td>Win rate</td><td>57.89%</td><td>57.38%</td><td>100%<span class="footnote">*</span></td></tr>
-  </table>
-
-  <table>
-    <caption>AAPL: one layer vs. three layers.</caption>
-    <tr><th>Metric</th><th>Agent (1 layer)</th><th>Agent (3 layers)</th><th>Buy &amp; Hold</th></tr>
-    <tr><td>Total return</td><td>8.29%</td><td class="win">24.15%</td><td>23.81%</td></tr>
-    <tr><td>Sharpe ratio</td><td>0.538</td><td class="win">1.503</td><td>1.064</td></tr>
-    <tr><td>Max drawdown</td><td>&minus;13.15%</td><td class="win">&minus;10.56%</td><td>&minus;13.80%</td></tr>
-    <tr><td>Win rate</td><td>53.12%</td><td>56.60%</td><td>100%<span class="footnote">*</span></td></tr>
-  </table>
-
-  <figure>
-    <img src="aapl_training_3layer.png" alt="Training, AAPL, 3-layer network">
-    <figcaption>Convergence is much cleaner and more sustained than with the shallow
-    network, without the earlier stagnation.</figcaption>
-  </figure>
-  <figure>
-    <img src="aapl_backtest_3layer.png" alt="Backtest, AAPL, 3-layer network">
-    <figcaption>The agent now nearly matches the benchmark by the end of the test
-    period.</figcaption>
-  </figure>
-  <figure>
-    <img src="mu_training_3layer.png" alt="Training, MU, 3-layer network">
-  </figure>
-  <figure>
-    <img src="mu_backtest_3layer.png" alt="Backtest, MU, 3-layer network">
-    <figcaption>Without reaching the benchmark's return, the gap shrinks a lot compared
-    to the shallow network, and Sharpe ends up above buy & hold's.</figcaption>
-  </figure>
-
-  <p>
-  There was the answer, and it was fairly clear: on both real assets, the deeper
-  network improved all four metrics without exception. The most interesting part is
-  that <strong>the deep agent's Sharpe ratio beat buy & hold's on both</strong>
-  (2.894 vs. 2.774 on MU; 1.503 vs. 1.064 on AAPL) -something that hadn't happened once
-  with the shallow network. Much of what looked like "the market beats the agent" was
-  actually "the network didn't have enough left to give."
-  </p>
-  <p>
-  Notice what didn't change: the agent's absolute total return is still below buy &
-  hold on both assets, even with the deep network. The improvement is in the
-  risk-return relationship and in drawdown control, not in capturing more raw return
-  during the climb. If what matters is the final number in the account, buy & hold
-  still wins. If what matters is how much risk you took to get there, the deep agent
-  now competes on equal footing.
-  </p>
-
-  <h2>What I take away from this</h2>
-  <p>
-  First: the agent's performance against simply staying long depends a lot on the
-  regime of whatever period it's tested on. In the synthetic case, with genuine
-  downtrends, it could squeeze value out of dodging them. In both real cases, the test
-  period coincided with sustained bull markets -there, any strategy that steps out of
-  the market starts at a structural disadvantage.
-  </p>
-  <p>
-  But that reading gets strongly qualified by the network-depth result: a good part of
-  what initially looked like "the agent can't compete in real markets" was, more
-  precisely, "the single-layer network couldn't represent the policy it needed to."
-  A problem with the environment isn't the same as a problem with the model's capacity,
-  and it's worth ruling out the second before drawing conclusions about the first.
-  </p>
-  <p>
-  Something else I noticed: MU's training curve with the small network converged much
-  more cleanly than AAPL's, and yet the agent still ended up losing to the benchmark in
-  both cases with that architecture. A healthy training curve doesn't guarantee that
-  the learned policy beats what you're comparing it to -those are two different things.
-  </p>
-  <p>
-  And the limitations, stated plainly: I trained for 300 episodes, which is low for
-  DQN; I used a single train/test split per scenario, with no walk-forward validation,
-  so I can't cleanly separate genuine skill from regime luck; the action space is
-  binary (long/flat), with no short positions; and each configuration ran with a single
-  seed, so part of the improvement from going deeper could be due to initialization
-  rather than model capacity alone. With two real assets and one synthetic series,
-  there's also no basis to generalize much further than what I saw here.
-  </p>
-  <p>
-  With all of that on the table, here's what I'm keeping: going from "the agent loses"
-  to "the agent competes on risk-return, with a better architecture" was the most
-  useful part of the whole exercise -and it's a good habit in general, before blaming
-  the market, to first rule out that the model had more to give.
-  </p>
-
-  <footer class="doc-footer">
-    Every numerical result on this page comes from code I ran and logged during the project's development.
-  </footer>
-
+</nav>
 </div>
+</header>
+
+<main class="page">
+<aside class="profile">
+<div class="profile-photo-placeholder" aria-label="Profile photo placeholder">
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+<circle cx="60" cy="60" r="58" stroke="#ddd" stroke-width="4" fill="#f9f9f9" />
+<text x="50%" y="55%" text-anchor="middle" fill="#aaa" font-size="48" font-family="Arial, sans-serif" dy=".3em"></text>
+</svg>
+</div>
+<h2>Diego</h2>
+<p class="pronouns">he/his</p>
+<p class="role">
+Data Science Ms Student
+</p>
+
+<ul class="profile-links">
+<li>
+<svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+<path d="M12 3L2 9v2h20V9L12 3zm-7 8v7H3v2h18v-2h-2v-7H5zm2 0h2v7H7v-7zm4 0h2v7h-2v-7zm4 0h2v7h-2v-7z"/>
+</svg>
+Syracuse University
+</li>
+
+<li>
+<svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true">
+<path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38
+0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87
+2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21
+2.2.82a7.7 7.7 0 012 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16
+1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75
+-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01
+2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/>
+</svg>
+<a href="https://github.com/dlvoq" target="_blank">Github</a>
+</li>
+
+<li>
+<svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true">
+<path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38
+0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87
+2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21
+2.2.82a7.7 7.7 0 012 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16
+1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75
+-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01
+2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/>
+</svg>
+<a href="https://github.com/qvdolv" target="_blank">Github (past)</a>
+</li>
+
+</ul>
+
+</aside>
+
+<section class="content">
+
+<p>
+Hi! I'm Diego, a Master's student in Data Science at Syracuse University.
+</p>
+
+<p>
+I like building things that combine math, code, and machine
+learning - agents that learn to hunt each other in a maze, robots
+that navigate real ones, a trading agent that has to earn every
+edge over a simple buy-and-hold, and 3D geometry you can cut and
+unfold yourself. More of that on the <a href="projects.html">Projects</a> page.
+</p>
+
+<video
+  class="project-preview-dqn"
+  src="assets/dqn-preview.mp4"
+  autoplay
+  loop
+  muted
+  playsinline
+></video>
+
+<p>
+<a href="predator-prey/index.html" target="_blank" rel="noopener noreferrer">
+See the predator-prey RL writeup &rarr;
+</a>
+</p>
+
+<img
+class="project-preview"
+src="trading-dqn/synthetic_backtest.png"
+alt="DQN trading agent vs buy-and-hold equity curve"
+>
+
+<p>
+<a href="trading-dqn/index.html" target="_blank" rel="noopener noreferrer">
+Read the DQN trading writeup &rarr;
+</a>
+</p>
+
+<video
+class="project-preview"
+src="assets/mobius-preview.mp4"
+autoplay
+loop
+muted
+playsinline
+></video>
+
+<p>
+<a href="mobius/index.html" target="_blank" rel="noopener noreferrer">
+Try the Möbius strip demo &rarr;
+</a>
+</p>
+
+<p>
+Right now I'm focused on machine learning and looking for opportunities
+in data science / ML.
+</p>
+
+</section>
+
+</main>
+
 </body>
 </html>
