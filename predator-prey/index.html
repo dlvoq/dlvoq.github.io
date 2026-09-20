@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Depredador y presa: simulación y bitácora técnica</title>
+<title>Predator and prey: simulation and technical log</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -45,6 +45,7 @@
     padding: 72px 28px 120px;
   }
 
+  /* ---------- Header ---------- */
   header.doc-header { margin-bottom: 56px; }
 
   .kicker {
@@ -82,6 +83,7 @@
   }
   .meta-line strong { color: var(--text); font-weight: 500; }
 
+  /* ---------- Section navigation ---------- */
   .section-nav {
     display: flex;
     gap: 10px;
@@ -113,6 +115,7 @@
     margin: 0 0 32px;
   }
 
+  /* ---------- Visualizer ---------- */
   #canvas-wrap {
     border: 1px solid var(--line);
     background: var(--panel);
@@ -170,6 +173,7 @@
   .legend span { display: inline-flex; align-items: center; gap: 6px; color: #c9cbb9; }
   .dot { width: 9px; height: 9px; display: inline-block; border-radius: 50%; }
 
+  /* ---------- Log / timeline ---------- */
   .log { position: relative; padding-left: 34px; }
   .log::before {
     content: "";
@@ -300,194 +304,199 @@
 <div class="wrap">
 
   <header class="doc-header">
-    <p class="kicker">Simulación multiagente · reinforcement learning</p>
-    <h1>Depredador y presa en un entorno parcialmente observable</h1>
-    <p class="lede">Documentación técnica de un entorno de aprendizaje por refuerzo con sensado tipo lidar y aprendizaje simultáneo de dos agentes, junto con el visualizador interactivo de las simulaciones registradas.</p>
+    <p class="kicker">Multi-agent simulation &middot; reinforcement learning</p>
+    <h1>Predator and prey in a partially observable environment</h1>
+    <p class="lede">Technical documentation of a reinforcement learning environment with lidar-style sensing and simultaneous learning by two agents, together with an interactive visualizer for recorded simulations.</p>
     <div class="meta-line">
-      <span>Entorno: <strong>laberinto 10×10</strong></span>
-      <span>Sensor: <strong>lidar de 8 rayos</strong></span>
-      <span>Algoritmo: <strong>DQN, implementación en NumPy</strong></span>
-      <span>Agentes: <strong>2, aprendizaje simultáneo</strong></span>
+      <span>Environment: <strong>10×10 maze</strong></span>
+      <span>Sensor: <strong>8-ray lidar</strong></span>
+      <span>Algorithm: <strong>DQN, implemented in NumPy</strong></span>
+      <span>Agents: <strong>2, simultaneous learning</strong></span>
     </div>
   </header>
 
   <nav class="section-nav">
-    <a href="#simulador">Visualizador</a>
-    <a href="#bitacora">Bitácora técnica</a>
+    <a href="#simulador">Visualizer</a>
+    <a href="#bitacora">Technical log</a>
   </nav>
 
+  <!-- =========================================================
+       SECTION 1: INTERACTIVE VISUALIZER
+  ========================================================== -->
   <section class="block" id="simulador">
-    <p class="section-title">01 · herramienta</p>
-    <h2 class="block-title">Visualizador de episodios</h2>
+    <p class="section-title">01 &middot; tool</p>
+    <h2 class="block-title">Episode visualizer</h2>
 
     <div id="canvas-wrap"></div>
 
     <div id="controls">
-      <button id="playBtn" disabled>Reproducir</button>
-      <button id="stepBtn" disabled>Avanzar</button>
-      <button id="resetBtn" disabled>Reiniciar</button>
+      <button id="playBtn" disabled>Play</button>
+      <button id="stepBtn" disabled>Step</button>
+      <button id="resetBtn" disabled>Reset</button>
       <input type="range" id="scrubber" min="0" max="0" value="0" disabled>
       <input type="file" id="fileInput" accept="application/json">
       <select id="fogView" disabled>
-        <option value="predator">Vista: mapa conocido por el depredador</option>
-        <option value="prey">Vista: mapa conocido por la presa</option>
-        <option value="union">Vista: unión de ambos mapas</option>
-        <option value="none">Vista: laberinto completo</option>
+        <option value="predator">View: map known to predator</option>
+        <option value="prey">View: map known to prey</option>
+        <option value="union">View: union of both maps</option>
+        <option value="none">View: full maze</option>
       </select>
       <label class="checkbox">
-        <input type="checkbox" id="lidarToggle" checked disabled> Mostrar sensores lidar
+        <input type="checkbox" id="lidarToggle" checked disabled> Show lidar sensors
       </label>
     </div>
 
     <div class="legend">
-      <span><span class="dot" style="background:#e07a4a;"></span>Depredador</span>
-      <span><span class="dot" style="background:#6fb0c2;"></span>Presa</span>
-      <span><span class="dot" style="background:#6b8a54; border-radius:2px;"></span>Pared</span>
-      <span><span class="dot" style="background:#e07a4a; opacity:0.55;"></span>Lidar del depredador</span>
-      <span><span class="dot" style="background:#6fb0c2; opacity:0.55;"></span>Lidar de la presa</span>
-      <span><span class="dot" style="background:#e8b23d;"></span>Punto de detección</span>
+      <span><span class="dot" style="background:#e07a4a;"></span>Predator</span>
+      <span><span class="dot" style="background:#6fb0c2;"></span>Prey</span>
+      <span><span class="dot" style="background:#6b8a54; border-radius:2px;"></span>Wall</span>
+      <span><span class="dot" style="background:#e07a4a; opacity:0.55;"></span>Predator lidar</span>
+      <span><span class="dot" style="background:#6fb0c2; opacity:0.55;"></span>Prey lidar</span>
+      <span><span class="dot" style="background:#e8b23d;"></span>Detection point</span>
     </div>
 
-    <div id="status">Cargando laberinto…</div>
+    <div id="status">Loading maze…</div>
   </section>
 
-  
+  <!-- =========================================================
+       SECTION 2: TECHNICAL LOG
+  ========================================================== -->
   <section class="block" id="bitacora">
-    <p class="section-title">02 · documentación</p>
-    <h2 class="block-title">Bitácora técnica</h2>
+    <p class="section-title">02 &middot; documentation</p>
+    <h2 class="block-title">Technical log</h2>
 
     <div class="log">
 
       <div class="entry">
         <p class="entry-num">2.1</p>
-        <h3 class="entry-title">Observabilidad parcial: un laberinto que ningún agente conoce por completo</h3>
-        <p>El entorno se diseñó de forma que ningún agente recibe la posición exacta de todo el mapa; cada uno dispone únicamente de la información que su propio sensor le proporciona. Esta decisión convierte el problema en un <strong>POMDP</strong> (proceso de decisión de Markov parcialmente observable): la política de cada agente actúa sobre una estimación del entorno, no sobre su estado real.</p>
-        <p>El módulo del entorno conserva la posición exacta de ambos agentes en todo momento, ya que actúa como árbitro para determinar encuentros. Esa información, sin embargo, nunca se expone directamente a la política de decisión.</p>
+        <h3 class="entry-title">Partial observability: a maze neither agent fully knows</h3>
+        <p>The environment is designed so that no agent receives the exact position of the whole map; each one only has the information its own sensor gives it. This decision turns the problem into a <strong>POMDP</strong> (partially observable Markov decision process): each agent's policy acts on an estimate of the environment, not on its true state.</p>
+        <p>The environment module keeps the exact position of both agents at all times, since it acts as the referee for determining encounters. That information, however, is never exposed directly to the decision policy.</p>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.2</p>
-        <h3 class="entry-title">El sensor: ocho rayos y un mapa propio por agente</h3>
-        <p>Cada agente emite ocho rayos en direcciones fijas (Norte, Noreste, Este, etc., en sentido horario). Cada rayo avanza celda por celda hasta un alcance máximo, y se detiene al encontrar una pared, el límite del tablero, o la posición del otro agente.</p>
+        <h3 class="entry-title">The sensor: eight rays and a map of its own per agent</h3>
+        <p>Each agent casts eight rays in fixed directions (North, Northeast, East, etc., clockwise). Each ray advances cell by cell up to a maximum range, and stops when it hits a wall, the edge of the board, or the other agent's position.</p>
         <div class="eq-box">
-          <p class="eq-label">distancia normalizada por rayo</p>
-          <p>$$d_{\text{rayo}} = \frac{\text{celdas libres hasta el obstáculo}}{\text{alcance máximo}} \in [0, 1]$$</p>
+          <p class="eq-label">normalized distance per ray</p>
+          <p>$$d_{\text{ray}} = \frac{\text{free cells to the obstacle}}{\text{maximum range}} \in [0, 1]$$</p>
         </div>
-        <p>Cada celda atravesada por un rayo se registra como "libre" en el mapa interno de ese agente, no en un mapa compartido. Con el paso de los episodios, cada agente construye su propia representación parcial del laberinto, de forma análoga al mapeo incremental de un robot equipado con lidar.</p>
+        <p>Every cell a ray passes through gets marked as "known" in that agent's own internal map, not a shared one. Episode after episode, each agent builds its own partial representation of the maze, similar to the incremental mapping done by a robot equipped with lidar.</p>
         <div class="finding">
-          <p class="f-label">simplificación de diseño</p>
-          <p>Un lidar físico solo mide tiempo de rebote de un haz: entrega una distancia, sin indicar qué golpeó. Esta implementación devuelve dos canales separados por rayo (<code>wall_dist</code> y <code>agent_detected</code>), es decir, ya entrega la clasificación resuelta en vez de una lectura cruda. Se hizo así para separar el problema de aprendizaje por refuerzo del de percepción y clasificación de objetos, que es otro problema distinto.</p>
+          <p class="f-label">design simplification</p>
+          <p>A physical lidar only measures the time a beam takes to bounce back: it gives a distance, without saying what it hit. This implementation returns two separate channels per ray (<code>wall_dist</code> and <code>agent_detected</code>), meaning it already hands over the resolved classification instead of a raw reading. This was done to separate the reinforcement learning problem from the separate problem of perception and object classification.</p>
         </div>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.3</p>
-        <h3 class="entry-title">Arquitectura de la red: veintiséis entradas, cinco salidas</h3>
-        <p>La observación de cada agente se convierte en un vector de 26 valores: 2 corresponden a la posición propia normalizada, y 24 a las lecturas del lidar. Estas últimas surgen de que cada uno de los 8 rayos aporta <strong>tres</strong> componentes, no dos: la distancia normalizada a la pared más cercana, un indicador binario de si ese rayo detectó al otro agente, y la distancia normalizada a ese agente en caso de haberlo detectado. Así, <code>8 rayos × 3 valores = 24</code>, más los 2 de posición propia, totalizan 26. Una red de una capa oculta transforma ese vector en un valor Q por cada una de las cinco acciones disponibles.</p>
+        <h3 class="entry-title">Network architecture: twenty-six inputs, five outputs</h3>
+        <p>Each agent's observation is turned into a 26-value vector: 2 correspond to its own normalized position, and 24 to the lidar readings. The latter come from each of the 8 rays contributing <strong>three</strong> components, not two: the normalized distance to the nearest wall, a binary flag for whether that ray detected the other agent, and the normalized distance to that agent if it was detected. So, <code>8 rays × 3 values = 24</code>, plus the 2 for its own position, add up to 26. A single-hidden-layer network turns that vector into a Q-value for each of the five available actions.</p>
         <div class="eq-box">
-          <p class="eq-label">propagación hacia adelante</p>
+          <p class="eq-label">forward pass</p>
           <p>$$z_1 = xW_1 + b_1 \qquad a_1 = \text{ReLU}(z_1) \qquad Q = a_1 W_2 + b_2$$</p>
         </div>
-        <p>La no linealidad introducida por <code>ReLU</code> entre ambas capas es necesaria: sin ella, la composición de transformaciones lineales sería equivalente a una única transformación lineal, independientemente del número de capas.</p>
+        <p>The nonlinearity introduced by <code>ReLU</code> between the two layers is necessary: without it, the composition of linear transformations would be equivalent to a single linear transformation, regardless of the number of layers.</p>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.4</p>
-        <h3 class="entry-title">Exploración frente a explotación</h3>
-        <p>Al inicio del entrenamiento, los pesos de la red son aleatorios y sus valores Q carecen de significado. Por esta razón, la acción no se elige siempre de forma determinista: con probabilidad <code>ε</code> se selecciona una acción aleatoria, y esa probabilidad decrece progresivamente a medida que la red acumula evidencia confiable.</p>
+        <h3 class="entry-title">Exploration versus exploitation</h3>
+        <p>At the start of training, the network's weights are random and its Q-values carry no real meaning. For that reason, the action isn't always chosen deterministically: with probability <code>ε</code> a random action is selected, and that probability decreases progressively as the network accumulates reliable evidence.</p>
         <div class="eq-box">
-          <p class="eq-label">política epsilon-greedy</p>
-          <p>$$a = \begin{cases} \text{acción aleatoria} & \text{con probabilidad } \varepsilon \\ \arg\max_a Q(s,a) & \text{con probabilidad } 1-\varepsilon \end{cases}$$</p>
+          <p class="eq-label">epsilon-greedy policy</p>
+          <p>$$a = \begin{cases} \text{random action} & \text{with probability } \varepsilon \\ \arg\max_a Q(s,a) & \text{with probability } 1-\varepsilon \end{cases}$$</p>
         </div>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.5</p>
-        <h3 class="entry-title">Memoria de experiencias</h3>
-        <p>Entrenar únicamente con la transición más reciente expondría a la red a secuencias de experiencias fuertemente correlacionadas entre sí. El <em>replay buffer</em> almacena un historial de transiciones pasadas y entrena a partir de muestras aleatorias de ese historial, reduciendo esa correlación y estabilizando el aprendizaje.</p>
+        <h3 class="entry-title">Experience memory</h3>
+        <p>Training only on the most recent transition would expose the network to sequences of strongly correlated experiences. The <em>replay buffer</em> stores a history of past transitions and trains on random samples drawn from that history, reducing that correlation and stabilizing learning.</p>
         <div class="finding">
-          <p class="f-label">fuente de los datos de entrenamiento</p>
-          <p>No existe un conjunto de datos externo. Cada episodio es una simulación generada en el momento, jugada por los propios agentes (<em>self-play</em>). Cada paso produce una transición <code>(observación, acción, recompensa, observación siguiente, fin)</code>, que se añade al buffer; los minibatches de entrenamiento se muestrean de ahí, no de un dataset preexistente.</p>
+          <p class="f-label">where the training data comes from</p>
+          <p>There is no external dataset. Every episode is a simulation generated on the fly, played by the agents themselves (<em>self-play</em>). Each step produces a transition <code>(observation, action, reward, next observation, done)</code>, which gets added to the buffer; training minibatches are sampled from there, not from a pre-existing dataset.</p>
         </div>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.6</p>
-        <h3 class="entry-title">La ecuación de Bellman</h3>
-        <p>El criterio central del aprendizaje establece que el valor de una acción equivale a la recompensa inmediata más el mejor valor alcanzable desde el estado siguiente.</p>
+        <h3 class="entry-title">The Bellman equation</h3>
+        <p>The core learning criterion states that the value of an action equals the immediate reward plus the best value achievable from the next state.</p>
         <div class="eq-box">
-          <p class="eq-label">objetivo de Bellman</p>
-          <p>$$\text{target} = \begin{cases} r & \text{si el episodio finalizó} \\ r + \gamma \max_{a'} Q(s', a') & \text{si continúa} \end{cases}$$</p>
+          <p class="eq-label">Bellman target</p>
+          <p>$$\text{target} = \begin{cases} r & \text{if the episode ended} \\ r + \gamma \max_{a'} Q(s', a') & \text{if it continues} \end{cases}$$</p>
         </div>
-        <p>La distinción entre ambos casos es relevante: si el episodio finalizó, no existe un estado siguiente del cual derivar valor adicional, por lo que no corresponde incorporar ningún término de futuro.</p>
+        <p>The distinction between the two cases matters: if the episode ended, there is no next state to draw additional value from, so no future term should be added.</p>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.7</p>
-        <h3 class="entry-title">Inestabilidad numérica: la red como objetivo de sí misma</h3>
-        <p>La primera versión del entrenamiento utilizaba la misma red tanto para la predicción como para el cálculo del objetivo de Bellman. El resultado fue una divergencia numérica (<code>RuntimeWarning: overflow</code>) hasta la pérdida total de significado de los valores producidos.</p>
+        <h3 class="entry-title">Numerical instability: the network as its own target</h3>
+        <p>The first version of training used the same network for both the prediction and the computation of the Bellman target. The result was numerical divergence (<code>RuntimeWarning: overflow</code>) up to a total loss of meaning in the produced values.</p>
         <div class="finding">
-          <p class="f-label">hallazgo</p>
-          <p>La causa es indirecta: en cada actualización de la red, el objetivo mismo se modifica, dado que se calcula con esa misma red. Se genera así un objetivo móvil que se desplaza en la dirección del último error, produciendo un ciclo de retroalimentación que amplifica el error en lugar de reducirlo.</p>
+          <p class="f-label">finding</p>
+          <p>The cause is indirect: with every network update, the target itself shifts, since it's computed using that same network. This creates a moving target that drifts in the direction of the latest error, producing a feedback loop that amplifies the error instead of reducing it.</p>
         </div>
-        <p>La solución estándar en DQN es la <strong>red objetivo (target network)</strong>: una copia de los parámetros que se actualiza únicamente cada cierto número de episodios. La red en entrenamiento converge hacia un objetivo estable durante ese intervalo, en vez de perseguir un objetivo que cambia en cada paso.</p>
+        <p>The standard DQN fix is the <strong>target network</strong>: a copy of the parameters that only gets updated every so many episodes. The network being trained converges toward a stable target during that interval, instead of chasing a target that changes at every step.</p>
         <pre><code>if episode % target_update_every == 0:
-    copy_weights(q_network, target_network)  # nueva copia congelada</code></pre>
-        <p>Tras esta corrección, y con una reducción moderada de la tasa de aprendizaje, la tasa de captura del depredador pasó de 4% en el episodio 50 a valores estables cercanos al 100% hacia el episodio 600: la primera evidencia consistente de que el agente estaba aprendiendo algo real.</p>
+    copy_weights(q_network, target_network)  # new frozen copy</code></pre>
+        <p>After this fix, along with a moderate reduction in the learning rate, the predator's capture rate went from 4% at episode 50 to stable values near 100% by episode 600: the first consistent evidence that the agent was learning something real.</p>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.8</p>
-        <h3 class="entry-title">Bucle determinista: el costo insuficiente de una colisión</h3>
-        <p>Al entrenar a ambos agentes simultáneamente surgió un problema distinto: en un episodio de evaluación, ninguno de los dos agentes se desplazó en ningún momento durante 101 pasos consecutivos.</p>
+        <h3 class="entry-title">Deterministic loop: the insufficient cost of a collision</h3>
+        <p>While training both agents simultaneously, a different problem showed up: in one evaluation episode, neither agent moved at all for 101 consecutive steps.</p>
         <div class="finding">
-          <p class="f-label">hallazgo</p>
-          <p>Bajo una política puramente determinista (sin exploración), si la acción de mayor valor Q resulta inválida en la posición actual, el agente se queda quieto. Y como el estado no cambia, la red vuelve a evaluar la misma entrada y elige otra vez la misma acción: un bucle sin salida.</p>
-          <p>La causa de fondo estaba en la función de recompensa: colisionar con una pared tenía el mismo costo que desplazarse con éxito, por lo que la red carecía de una señal que penalizara específicamente ese comportamiento.</p>
+          <p class="f-label">finding</p>
+          <p>Under a purely deterministic policy (no exploration), if the highest-Q action is invalid at the current position, the agent stays put. And since the state doesn't change, the network evaluates the same input again and picks the same action again: a loop with no way out.</p>
+          <p>The underlying cause was in the reward function: colliding with a wall cost the same as moving successfully, so the network had no signal specifically penalizing that behavior.</p>
         </div>
-        <p>Se incorporó una penalización específica por colisión, evaluada con dos magnitudes distintas:</p>
+        <p>A specific collision penalty was added, tested at two different magnitudes:</p>
         <table>
-          <tr><th>Penalización por colisión</th><th>Comportamiento observado</th></tr>
-          <tr><td class="num">−0.2</td><td>La presa convergió a permanecer inmóvil de forma permanente: el riesgo de colisión superaba el beneficio marginal de sobrevivir un paso adicional.</td></tr>
-          <tr><td class="num">−0.05</td><td>Desplazamiento variado y sostenido; el bucle determinista desapareció sin inducir pasividad excesiva.</td></tr>
+          <tr><th>Collision penalty</th><th>Observed behavior</th></tr>
+          <tr><td class="num">−0.2</td><td>The prey converged to staying permanently still: the risk of collision outweighed the marginal benefit of surviving one more step.</td></tr>
+          <tr><td class="num">−0.05</td><td>Varied, sustained movement; the deterministic loop disappeared without inducing excessive passivity.</td></tr>
         </table>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.9</p>
-        <h3 class="entry-title">Comportamiento emergente no especificado</h3>
-        <p>Con el ajuste de penalización descrito, se observó un patrón de comportamiento que no formaba parte del diseño original: la presa permanece inmóvil mientras no detecta al depredador, y solo inicia desplazamiento al recibir esa señal por su sensor.</p>
-        <pre><code>paso 23: depredador detecta presa = False | acción presa = 4 (permanecer)
-paso 24: depredador detecta presa = True
-paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></pre>
+        <h3 class="entry-title">Unspecified emergent behavior</h3>
+        <p>With the penalty adjustment described above, a behavior pattern emerged that wasn't part of the original design: the prey stays still as long as it doesn't detect the predator, and only starts moving once its sensor picks up that signal.</p>
+        <pre><code>step 23: predator detects prey = False | prey action = 4 (stay)
+step 24: predator detects prey = True
+step 25: prey action = 0 (up)  ← starts evading once detected</code></pre>
         <div class="finding">
-          <p class="f-label">interpretación</p>
-          <p>Es una política razonable, aunque subóptima: moverse sin necesidad implica riesgo de colisión sin ningún beneficio si no hay amenaza cerca. La red llegó sola a esa idea, sin que nadie se la programara: una estrategia de <span class="tag-prey">espera y reacción</span> sale más barata que moverse sin rumbo.</p>
+          <p class="f-label">interpretation</p>
+          <p>It's a reasonable policy, if suboptimal: moving without need carries collision risk with no benefit if there's no threat nearby. The network arrived at this idea on its own, with no one programming it in: a <span class="tag-prey">wait-and-react</span> strategy is cheaper than moving around aimlessly.</p>
         </div>
         <div class="finding">
-          <p class="f-label">límite observado</p>
-          <p>Esta política reactiva depende por completo de que el depredador se mantenga dentro del alcance del sensor. En una corrida de evaluación posterior, el depredador perdió de vista a la presa tras una persecución y se quedó quieto en <code>(7,9)</code>, mientras la presa se quedó en <code>(9,0)</code> (a 9 celdas de distancia) durante los últimos 20 pasos del episodio. Ninguno de los dos agentes aprendió a buscar activamente cuando pierde de vista al otro; ambos se quedan quietos ante la falta de señal, en vez de explorar.</p>
+          <p class="f-label">observed limit</p>
+          <p>This reactive policy depends entirely on the predator staying within sensor range. In a later evaluation run, the predator lost sight of the prey after a chase and stopped at <code>(7,9)</code>, while the prey stayed at <code>(9,0)</code> (9 cells away) for the last 20 steps of the episode. Neither agent learned to actively search when it loses sight of the other; both just stay still in the absence of a signal, instead of exploring.</p>
         </div>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.10</p>
-        <h3 class="entry-title">No estacionariedad en el entrenamiento simultáneo</h3>
-        <p>Cuando únicamente el <span class="tag-pred">depredador</span> aprendía, enfrentando una presa con política aleatoria, su tasa de captura aumentó y se estabilizó en 100%. Al entrenar ambos agentes de forma simultánea, la tasa de captura aumenta inicialmente y luego <strong>oscila</strong>, sin converger a un valor único.</p>
+        <h3 class="entry-title">Non-stationarity in simultaneous training</h3>
+        <p>When only the <span class="tag-pred">predator</span> was learning, facing a prey with a random policy, its capture rate rose and settled at 100%. When training both agents simultaneously, the capture rate initially rises and then <strong>oscillates</strong>, without converging to a single value.</p>
         <div class="finding">
-          <p class="f-label">interpretación</p>
-          <p>El fenómeno corresponde a la no estacionariedad propia de los entornos multiagente: desde la perspectiva de cualquiera de los dos agentes, el entorno cambia todo el tiempo, porque el otro agente también está actualizando su política. Cada mejora de un lado obliga al otro a adaptarse, y no hay garantía de que exista un equilibrio estable entre ambos.</p>
+          <p class="f-label">interpretation</p>
+          <p>This is the non-stationarity inherent to multi-agent environments: from either agent's perspective, the environment keeps changing, because the other agent is also updating its policy. Every improvement on one side forces the other to adapt, with no guarantee that a stable equilibrium exists between the two.</p>
         </div>
       </div>
 
       <div class="entry">
         <p class="entry-num">2.11</p>
-        <h3 class="entry-title">Líneas de trabajo pendientes</h3>
-        <p>Quedan pendientes estas extensiones:</p>
+        <h3 class="entry-title">Open threads</h3>
+        <p>These extensions are still pending:</p>
         <ul class="todo-list">
-          <li>Sumar a la recompensa de la presa un término proporcional a la distancia respecto al depredador, en lugar de basarla solo en la supervivencia, para incentivar evasión activa.</li>
-          <li>Extender el número de episodios de entrenamiento (o la capacidad de la red) para ver si la oscilación de 2.10 converge a un equilibrio o es un ciclo persistente.</li>
-          <li>Registrar la curva de error cuadrático de <code>train_step</code> durante el entrenamiento, para ver el efecto de la red objetivo directamente en vez de inferirlo solo de la tasa de captura.</li>
+          <li>Add a term to the prey's reward proportional to its distance from the predator, instead of basing it only on survival, to incentivize active evasion.</li>
+          <li>Extend the number of training episodes (or the network's capacity) to see whether the oscillation in 2.10 converges to an equilibrium or is a persistent cycle.</li>
+          <li>Log the squared error curve of <code>train_step</code> during training, to see the target network's effect directly instead of inferring it only from the capture rate.</li>
         </ul>
       </div>
 
@@ -495,13 +504,14 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
   </section>
 
   <footer class="doc-footer">
-    Cada ecuación de esta bitácora corresponde a código ejecutado y depurado durante el desarrollo del proyecto.
+    Every equation in this log corresponds to code that was actually run and debugged during the project's development.
   </footer>
 
 </div>
 
 <script>
   const CELL = 1.0;
+  // Must match LIDAR_DIRECTIONS in predator_prey_env.py exactly
   const LIDAR_DIRECTIONS = [
     [0, -1], [1, -1], [1, 0], [1, 1],
     [0, 1], [-1, 1], [-1, 0], [-1, -1],
@@ -539,7 +549,7 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
                  [5,7],[5,8],[5,9],[7,1],[7,2],[7,3],[7,5],[7,6],[7,7],[7,8]],
         predator_start: [0,0], prey_start: [9,9], max_steps: 100
       };
-      setStatus('No fue posible obtener maze_config.json (probablemente el archivo se abrió vía file://), así que se usa un laberinto por defecto.');
+      setStatus('Could not fetch maze_config.json (likely opened via file://), so a default maze is being used.');
     }
     initScene();
     loadDefaultEpisode();
@@ -548,11 +558,11 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
   async function loadDefaultEpisode() {
     try {
       const res = await fetch('episode.json');
-      if (!res.ok) throw new Error('episode.json no encontrado');
+      if (!res.ok) throw new Error('episode.json not found');
       const frames = await res.json();
       loadEpisode(frames);
     } catch (e) {
-      setStatus('Laberinto cargado. Seleccione un archivo de episodio (JSON) para reproducirlo.');
+      setStatus('Maze loaded. Select an episode file (JSON) to play it back.');
     }
   }
 
@@ -611,7 +621,7 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
     buildFogGrid();
     setAgentPositions(maze.predator_start, maze.prey_start);
     renderer.render(scene, camera);
-    setStatus('Laberinto cargado. Seleccione un archivo de episodio (JSON) para reproducirlo.');
+    setStatus('Maze loaded. Select an episode file (JSON) to play it back.');
   }
 
   function buildFogGrid() {
@@ -709,7 +719,7 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
     scrubber.value = 0;
     [playBtn, stepBtn, resetBtn, scrubber, fogView, lidarToggle].forEach(el => el.disabled = false);
     renderFrame(0);
-    setStatus(`Episodio cargado: ${episode.length} pasos.`);
+    setStatus(`Episode loaded: ${episode.length} steps.`);
   }
 
   function renderFrame(i) {
@@ -720,16 +730,16 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
     updateFog(f);
     updateLidar(f);
     scrubber.value = frameIndex;
-    const caughtNote = f.caught ? ' - encuentro registrado' : '';
-    setStatus(`Paso ${frameIndex + 1} / ${episode.length}${caughtNote}`);
-    if (f.caught) { playing = false; playBtn.textContent = 'Reproducir'; }
+    const caughtNote = f.caught ? ' - catch recorded' : '';
+    setStatus(`Step ${frameIndex + 1} / ${episode.length}${caughtNote}`);
+    if (f.caught) { playing = false; playBtn.textContent = 'Play'; }
   }
 
   function tick() {
     if (!playing) return;
     if (frameIndex >= episode.length - 1) {
       playing = false;
-      playBtn.textContent = 'Reproducir';
+      playBtn.textContent = 'Play';
       return;
     }
     renderFrame(frameIndex + 1);
@@ -739,25 +749,25 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
   playBtn.addEventListener('click', () => {
     if (!episode) return;
     playing = !playing;
-    playBtn.textContent = playing ? 'Pausar' : 'Reproducir';
+    playBtn.textContent = playing ? 'Pause' : 'Play';
     if (playing) tick();
   });
 
   stepBtn.addEventListener('click', () => {
     playing = false;
-    playBtn.textContent = 'Reproducir';
+    playBtn.textContent = 'Play';
     renderFrame(frameIndex + 1);
   });
 
   resetBtn.addEventListener('click', () => {
     playing = false;
-    playBtn.textContent = 'Reproducir';
+    playBtn.textContent = 'Play';
     renderFrame(0);
   });
 
   scrubber.addEventListener('input', (e) => {
     playing = false;
-    playBtn.textContent = 'Reproducir';
+    playBtn.textContent = 'Play';
     renderFrame(parseInt(e.target.value, 10));
   });
 
@@ -779,7 +789,7 @@ paso 25: acción presa = 0 (arriba)  - inicia evasión al ser detectada</code></
         const frames = JSON.parse(ev.target.result);
         loadEpisode(frames);
       } catch (err) {
-        setStatus('No fue posible interpretar el archivo seleccionado como JSON de episodio.');
+        setStatus('Could not parse the selected file as episode JSON.');
       }
     };
     reader.readAsText(file);
